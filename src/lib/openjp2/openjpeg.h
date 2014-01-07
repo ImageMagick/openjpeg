@@ -53,7 +53,7 @@
 	#define OPJ_DEPRECATED(func) func
 #endif
 
-#if defined(OPJ_STATIC) || !defined(_WIN32)
+#if defined(_LIB) || !defined(_WIN32)
 /* http://gcc.gnu.org/wiki/Visibility */
 #if __GNUC__ >= 4
 #define OPJ_API    __attribute__ ((visibility ("default")))
