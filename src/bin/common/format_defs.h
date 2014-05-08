@@ -1,9 +1,15 @@
 /*
- * Copyright (c) 2002-2007, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2007, Professor Benoit Macq
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2001-2003, David Janssens
  * Copyright (c) 2002-2003, Yannick Verschueren
- * Copyright (c) 2003-2007, Francois-Olivier Devaux and Antonin Descampe
+ * Copyright (c) 2003-2007, Francois-Olivier Devaux 
+ * Copyright (c) 2003-2014, Antonin Descampe
  * Copyright (c) 2005, Herve Drolon, FreeImage Team
  * All rights reserved.
  *
@@ -41,9 +47,9 @@
 #define BMP_DFMT 12
 #define YUV_DFMT 13
 #define TIF_DFMT 14
-#define RAW_DFMT 15
+#define RAW_DFMT 15 /* MSB / Big Endian */
 #define TGA_DFMT 16
 #define PNG_DFMT 17
-#define RAWL_DFMT 18
+#define RAWL_DFMT 18 /* LSB / Little Endian */
 
 #endif /* _OPJ_FORMAT_DEFS_H_ */

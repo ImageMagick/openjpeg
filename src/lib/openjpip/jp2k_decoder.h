@@ -1,8 +1,8 @@
 /*
- * $Id: jp2k_decoder.h 2008 2012-10-01 08:43:02Z mathieu.malaterre $
+ * $Id: jp2k_decoder.h 2835 2014-04-03 15:30:57Z antonin $
  *
- * Copyright (c) 2002-2011, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2011, Professor Benoit Macq
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2010-2011, Kaori Hagihara
  * All rights reserved.
  *
@@ -34,6 +34,6 @@
 #include "byte_manager.h"
 #include "ihdrbox_manager.h"
 
-Byte_t * j2k_to_pnm( FILE *fp, ihdrbox_param_t **ihdrbox);
+Byte_t * j2k_to_pnm( const char *fn, ihdrbox_param_t **ihdrbox);
 
 #endif 	    /* !JP2K_DECODER_H_ */

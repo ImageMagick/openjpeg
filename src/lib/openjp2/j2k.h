@@ -1,9 +1,15 @@
 /*
- * Copyright (c) 2002-2007, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2007, Professor Benoit Macq
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2001-2003, David Janssens
  * Copyright (c) 2002-2003, Yannick Verschueren
- * Copyright (c) 2003-2007, Francois-Olivier Devaux and Antonin Descampe
+ * Copyright (c) 2003-2007, Francois-Olivier Devaux 
+ * Copyright (c) 2003-2014, Antonin Descampe
  * Copyright (c) 2005, Herve Drolon, FreeImage Team
  * Copyright (c) 2006-2007, Parvatha Elangovan
  * Copyright (c) 2008, Jerome Fimes, Communications & Systemes <jerome.fimes@c-s.fr>
@@ -298,8 +304,6 @@ typedef struct opj_tcp
 
 typedef struct opj_encoding_param
 {
-	/** Digital cinema profile*/
-	OPJ_CINEMA_MODE m_cinema;
 	/** Maximum rate for each component. If == 0, component size limitation is not considered */
 	OPJ_UINT32 m_max_comp_size;
 	/** Position of tile part flag in progression order*/
@@ -337,7 +341,7 @@ typedef struct opj_cp
 	/** Size of the image in bits*/
 	/*int img_size;*/
 	/** Rsiz*/
-	OPJ_RSIZ_CAPABILITIES rsiz;
+    OPJ_UINT16 rsiz;
 	/** XTOsiz */
 	OPJ_UINT32 tx0; /* MSD see norm */
 	/** YTOsiz */

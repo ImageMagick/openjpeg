@@ -99,7 +99,7 @@ static int infile_format(const char *fname)
                 return -1;
 
         memset(buf, 0, 12);
-        l_nb_read = fread(buf, 1, 12, reader);
+        l_nb_read = (unsigned int)fread(buf, 1, 12, reader);
         fclose(reader);
         if (l_nb_read != 12)
                 return -1;
@@ -137,20 +137,6 @@ static int infile_format(const char *fname)
 /* -------------------------------------------------------------------------- */
 
 /**
-  sample error callback expecting a FILE* client object
- */
-static void error_callback_file(const char *msg, void *client_data) {
-        FILE *stream = (FILE*)client_data;
-        fprintf(stream, "[ERROR] %s", msg);
-}
-/**
-  sample warning callback expecting a FILE* client object
- */
-static void warning_callback_file(const char *msg, void *client_data) {
-        FILE *stream = (FILE*)client_data;
-        fprintf(stream, "[WARNING] %s", msg);
-}
-/**
   sample error debug callback expecting no client object
  */
 static void error_callback(const char *msg, void *client_data) {
@@ -185,8 +171,7 @@ int main (int argc, char *argv[])
         OPJ_UINT32 l_tile_index;
         OPJ_BYTE * l_data = (OPJ_BYTE *) malloc(1000);
         OPJ_BOOL l_go_on = OPJ_TRUE;
-        OPJ_INT32 l_tile_x0=0, l_tile_y0=0 ;
-        OPJ_UINT32 l_tile_width=0, l_tile_height=0, l_nb_tiles_x=0, l_nb_tiles_y=0, l_nb_comps=0 ;
+        OPJ_UINT32 l_nb_comps=0 ;
         OPJ_INT32 l_current_tile_x0,l_current_tile_y0,l_current_tile_x1,l_current_tile_y1;
 
         int da_x0=0;
@@ -218,7 +203,7 @@ int main (int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        l_stream = opj_stream_create_default_file_stream_v3(input_file,OPJ_TRUE);
+        l_stream = opj_stream_create_default_file_stream(input_file,OPJ_TRUE);
         if (!l_stream){
                 free(l_data);
                 fprintf(stderr, "ERROR -> failed to create the stream from the file\n");
@@ -259,7 +244,7 @@ int main (int argc, char *argv[])
                         {    
                                 fprintf(stderr, "ERROR -> Not a valid JPEG2000 file!\n");
                                 free(l_data);
-                                opj_stream_destroy_v3(l_stream);
+                                opj_stream_destroy(l_stream);
                                 return EXIT_FAILURE;
                         }
         }
@@ -274,7 +259,7 @@ int main (int argc, char *argv[])
         {
                 fprintf(stderr, "ERROR -> j2k_dump: failed to setup the decoder\n");
                 free(l_data);
-                opj_stream_destroy_v3(l_stream);
+                opj_stream_destroy(l_stream);
                 opj_destroy_codec(l_codec);
                 return EXIT_FAILURE;
         }
@@ -284,7 +269,7 @@ int main (int argc, char *argv[])
         {
                 fprintf(stderr, "ERROR -> j2k_to_image: failed to read the header\n");
                 free(l_data);
-                opj_stream_destroy_v3(l_stream);
+                opj_stream_destroy(l_stream);
                 opj_destroy_codec(l_codec);
                 return EXIT_FAILURE;
         }
@@ -292,7 +277,7 @@ int main (int argc, char *argv[])
         if (!opj_set_decode_area(l_codec, l_image, da_x0, da_y0,da_x1, da_y1)){
                 fprintf(stderr,	"ERROR -> j2k_to_image: failed to set the decoded area\n");
                 free(l_data);
-                opj_stream_destroy_v3(l_stream);
+                opj_stream_destroy(l_stream);
                 opj_destroy_codec(l_codec);
                 opj_image_destroy(l_image);
                 return EXIT_FAILURE;
@@ -313,7 +298,7 @@ int main (int argc, char *argv[])
                                         &l_go_on))
                 {
                         free(l_data);
-                        opj_stream_destroy_v3(l_stream);
+                        opj_stream_destroy(l_stream);
                         opj_destroy_codec(l_codec);
                         opj_image_destroy(l_image);
                         return EXIT_FAILURE;
@@ -327,7 +312,7 @@ int main (int argc, char *argv[])
                                 if (! l_new_data)
                                 {
                                         free(l_new_data);
-                                        opj_stream_destroy_v3(l_stream);
+                                        opj_stream_destroy(l_stream);
                                         opj_destroy_codec(l_codec);
                                         opj_image_destroy(l_image);
                                         return EXIT_FAILURE;
@@ -339,7 +324,7 @@ int main (int argc, char *argv[])
                         if (! opj_decode_tile_data(l_codec,l_tile_index,l_data,l_data_size,l_stream))
                         {
                                 free(l_data);
-                                opj_stream_destroy_v3(l_stream);
+                                opj_stream_destroy(l_stream);
                                 opj_destroy_codec(l_codec);
                                 opj_image_destroy(l_image);
                                 return EXIT_FAILURE;
@@ -351,7 +336,7 @@ int main (int argc, char *argv[])
         if (! opj_end_decompress(l_codec,l_stream))
         {
                 free(l_data);
-                opj_stream_destroy_v3(l_stream);
+                opj_stream_destroy(l_stream);
                 opj_destroy_codec(l_codec);
                 opj_image_destroy(l_image);
                 return EXIT_FAILURE;
@@ -359,7 +344,7 @@ int main (int argc, char *argv[])
 
         /* Free memory */
         free(l_data);
-        opj_stream_destroy_v3(l_stream);
+        opj_stream_destroy(l_stream);
         opj_destroy_codec(l_codec);
         opj_image_destroy(l_image);
 

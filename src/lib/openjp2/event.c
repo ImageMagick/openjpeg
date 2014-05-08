@@ -1,6 +1,11 @@
 /*
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
  * Copyright (c) 2005, Herve Drolon, FreeImage Team
- * Copyright (c) 2008;2011-2012, Centre National d'Etudes Spatiales (CNES), France 
+ * Copyright (c) 2008, 2011-2012, Centre National d'Etudes Spatiales (CNES), FR 
  * Copyright (c) 2012, CS Systemes d'Information, France
  * All rights reserved.
  *
@@ -118,7 +123,7 @@ OPJ_BOOL opj_event_msg(opj_event_mgr_t* p_event_mgr, OPJ_INT32 event_type, const
 		str_length = (strlen(fmt) > OPJ_MSG_SIZE) ? OPJ_MSG_SIZE : strlen(fmt);
         (void)str_length;
 		/* parse the format string and put the result in 'message' */
-		vsprintf(message, fmt, arg); /* UniPG */
+		vsnprintf(message, OPJ_MSG_SIZE, fmt, arg); /* UniPG */
 		/* deinitialize the optional parameter list */
 		va_end(arg);
 

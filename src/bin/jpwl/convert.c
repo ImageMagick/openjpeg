@@ -1,9 +1,15 @@
 /*
- * Copyright (c) 2002-2007, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2007, Professor Benoit Macq
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2001-2003, David Janssens
  * Copyright (c) 2002-2003, Yannick Verschueren
- * Copyright (c) 2003-2007, Francois-Olivier Devaux and Antonin Descampe
+ * Copyright (c) 2003-2007, Francois-Olivier Devaux 
+ * Copyright (c) 2003-2014, Antonin Descampe
  * Copyright (c) 2005, Herve Drolon, FreeImage Team
  * Copyright (c) 2006-2007, Parvatha Elangovan
  * All rights reserved.
@@ -94,7 +100,7 @@ struct tga_header
 
 static unsigned short get_ushort(unsigned short val) {
 
-#ifdef WORDS_BIGENDIAN
+#ifdef OPJ_BIG_ENDIAN
 	return( ((val & 0xff) << 8) + (val >> 8) );
 #else
     return( val );
@@ -179,7 +185,7 @@ static int tga_readheader(FILE *fp, unsigned int *bits_per_pixel,
 	return 1;
 }
 
-#if WORDS_BIGENDIAN == 1
+#ifdef OPJ_BIG_ENDIAN
 
 static inline int16_t swap16(int16_t x)
 {
@@ -226,7 +232,7 @@ static int tga_writeheader(FILE *fp, int bits_per_pixel, int width, int height,
 	image_w = (unsigned short)width;
 	image_h = (unsigned short) height;
 
-#if WORDS_BIGENDIAN == 0
+#ifndef OPJ_BIG_ENDIAN
 	if(fwrite(&image_w, 2, 1, fp) != 1) goto fails;
 	if(fwrite(&image_h, 2, 1, fp) != 1) goto fails;
 #else

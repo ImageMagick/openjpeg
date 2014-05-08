@@ -1,8 +1,8 @@
 /*
- * $Id: jp2k_encoder.h 1503 2012-03-02 11:09:16Z mathieu.malaterre $
+ * $Id: jp2k_encoder.h 2835 2014-04-03 15:30:57Z antonin $
  *
- * Copyright (c) 2002-2011, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2011, Professor Benoit Macq
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2010-2011, Kaori Hagihara 
  * Copyright (c) 2011,      Lucian Corlaciu, GSoC
  * All rights reserved.

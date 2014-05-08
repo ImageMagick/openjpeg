@@ -1,11 +1,17 @@
 /*
- * Copyright (c) 2002-2007, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2007, Professor Benoit Macq
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2001-2003, David Janssens
  * Copyright (c) 2002-2003, Yannick Verschueren
- * Copyright (c) 2003-2007, Francois-Olivier Devaux and Antonin Descampe
+ * Copyright (c) 2003-2007, Francois-Olivier Devaux 
+ * Copyright (c) 2003-2014, Antonin Descampe
  * Copyright (c) 2005, Herve Drolon, FreeImage Team
- * Copyright (c) 2008;2011-2012, Centre National d'Etudes Spatiales (CNES), France 
+ * Copyright (c) 2008, 2011-2012, Centre National d'Etudes Spatiales (CNES), FR 
  * Copyright (c) 2012, CS Systemes d'Information, France
  * All rights reserved.
  *
@@ -43,7 +49,7 @@ The functions in CIO.C have for goal to realize a byte input / output process.
 /** @defgroup CIO CIO - byte input-output stream */
 /*@{*/
 
-#include "opj_config.h"
+#include "opj_config_private.h"
 
 /* ----------------------------------------------------------------------- */
 
@@ -84,6 +90,13 @@ typedef struct opj_stream_private
 	 * User data, be it files, ... The actual data depends on the type of the stream.
 	 */
 	void *					m_user_data;
+
+	/**
+	 * Pointer to function to free m_user_data (NULL at initialization)
+	 * when destroying the stream. If pointer is NULL the function is not
+	 * called and the m_user_data is not freed (even if non-NULL).
+	 */
+	opj_stream_free_user_data_fn		m_free_user_data_fn;
 
 	/**
 	 * User data length

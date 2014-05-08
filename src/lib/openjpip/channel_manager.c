@@ -1,8 +1,8 @@
 /*
- * $Id: channel_manager.c 2061 2012-10-08 15:59:17Z mathieu.malaterre $
+ * $Id: channel_manager.c 2835 2014-04-03 15:30:57Z antonin $
  *
- * Copyright (c) 2002-2011, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2011, Professor Benoit Macq
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2010-2011, Kaori Hagihara
  * All rights reserved.
  *

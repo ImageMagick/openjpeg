@@ -1,8 +1,8 @@
 /*
- * $Id: jp2k_encoder.c 2209 2012-11-15 14:43:50Z savmickael $
+ * $Id: jp2k_encoder.c 2835 2014-04-03 15:30:57Z antonin $
  *
- * Copyright (c) 2002-2011, Communications and Remote Sensing Laboratory, Universite catholique de Louvain (UCL), Belgium
- * Copyright (c) 2002-2011, Professor Benoit Macq
+ * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
+ * Copyright (c) 2002-2014, Professor Benoit Macq
  * Copyright (c) 2010-2011, Kaori Hagihara
  * Copyright (c) 2011,      Lucian Corlaciu, GSoC
  * All rights reserved.
@@ -608,14 +608,14 @@ Byte8_t comp_seqID( Byte8_t tileID, SIZmarker_param_t SIZ, CODmarker_param_t COD
   return seqID;
 }
 
-Byte8_t get_last_tileID( msgqueue_param_t *msgqueue, Byte8_t csn, OPJ_BOOL isJPPstream)
+Byte8_t get_last_tileID( msgqueue_param_t *msgqueue, Byte8_t csn, OPJ_BOOL isjppstream)
 {
   Byte8_t last_tileID = 0;
   message_param_t *msg;
   
   msg = msgqueue->first;
   while( msg){
-    if( isJPPstream){
+    if( isjppstream){
       if((msg->class_id == TILE_HEADER_MSG) && msg->csn == csn && last_tileID < msg->in_class_id)
 	last_tileID = msg->in_class_id;
     }

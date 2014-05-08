@@ -1,4 +1,9 @@
 /*
+ * The copyright in this software is being made available under the 2-clauses 
+ * BSD License, included below. This software may be subject to other third 
+ * party and contributor rights, including patent rights, and no such rights
+ * are granted under this license.
+ *
  * Copyright (c) 2010, Mathieu Malaterre, GDCM
  * Copyright (c) 2011-2012, Centre National d'Etudes Spatiales (CNES), France 
  * Copyright (c) 2012, CS Systemes d'Information, France
@@ -71,34 +76,29 @@ typedef struct img_folder{
 	/** Enable Cod Format for output*/
 	char set_out_format;
 
+  int flag;
 }img_fol_t;
 
 /* -------------------------------------------------------------------------- */
 /* Declarations                                                               */
-int get_num_images(char *imgdirpath);
-int load_images(dircnt_t *dirptr, char *imgdirpath);
-int get_file_format(const char *filename);
-char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_dparameters_t *parameters);
+static int get_num_images(char *imgdirpath);
+static int load_images(dircnt_t *dirptr, char *imgdirpath);
+static int get_file_format(const char *filename);
+static char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_dparameters_t *parameters);
 static int infile_format(const char *fname);
 
-int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,img_fol_t *img_fol);
-int parse_DA_values( char* inArg, unsigned int *DA_x0, unsigned int *DA_y0, unsigned int *DA_x1, unsigned int *DA_y1);
+static int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,img_fol_t *img_fol);
 
 /* -------------------------------------------------------------------------- */
 static void decode_help_display(void) {
-	fprintf(stdout,"HELP for opj_dump\n----\n\n");
-	fprintf(stdout,"- the -h option displays this help information on screen\n\n");
+    fprintf(stdout,"\nThis is the opj_dump utility from the OpenJPEG project.\n"
+            "It dumps JPEG 2000 codestream info to stdout or a given file.\n"
+            "It has been compiled against openjp2 library v%s.\n\n",opj_version());
 
-/* UniPG>> */
-	fprintf(stdout,"List of parameters for the JPEG 2000 "
-#ifdef USE_JPWL
-		"+ JPWL "
-#endif /* USE_JPWL */
-		"decoder:\n");
-/* <<UniPG */
-	fprintf(stdout,"\n");
-	fprintf(stdout,"\n");
-	fprintf(stdout,"  -ImgDir \n");
+    fprintf(stdout,"Parameters:\n");
+    fprintf(stdout,"-----------\n");
+    fprintf(stdout,"\n");
+    fprintf(stdout,"  -ImgDir <directory>\n");
 	fprintf(stdout,"	Image file Directory path \n");
 	fprintf(stdout,"  -i <compressed file>\n");
 	fprintf(stdout,"    REQUIRED only if an Input image directory not specified\n");
@@ -108,15 +108,15 @@ static void decode_help_display(void) {
 	fprintf(stdout,"    OPTIONAL\n");
 	fprintf(stdout,"    Output file where file info will be dump.\n");
 	fprintf(stdout,"    By default it will be in the stdout.\n");
-	fprintf(stdout,"  -v "); /* FIXME WIP_MSD */
+    fprintf(stdout,"  -v "); /* FIXME WIP_MSD */
 	fprintf(stdout,"    OPTIONAL\n");
-	fprintf(stdout,"    Activate or not the verbose mode (display info and warning message)\n");
-	fprintf(stdout,"    By default verbose mode is off.\n");
+    fprintf(stdout,"    Enable informative messages\n");
+    fprintf(stdout,"    By default verbose mode is off.\n");
 	fprintf(stdout,"\n");
 }
 
 /* -------------------------------------------------------------------------- */
-int get_num_images(char *imgdirpath){
+static int get_num_images(char *imgdirpath){
 	DIR *dir;
 	struct dirent* content;	
 	int num_images = 0;
@@ -138,7 +138,7 @@ int get_num_images(char *imgdirpath){
 }
 
 /* -------------------------------------------------------------------------- */
-int load_images(dircnt_t *dirptr, char *imgdirpath){
+static int load_images(dircnt_t *dirptr, char *imgdirpath){
 	DIR *dir;
 	struct dirent* content;	
 	int i = 0;
@@ -164,7 +164,7 @@ int load_images(dircnt_t *dirptr, char *imgdirpath){
 }
 
 /* -------------------------------------------------------------------------- */
-int get_file_format(const char *filename) {
+static int get_file_format(const char *filename) {
 	unsigned int i;
 	static const char *extension[] = {"pgx", "pnm", "pgm", "ppm", "bmp","tif", "raw", "tga", "png", "j2k", "jp2", "jpt", "j2c", "jpc"  };
 	static const int format[] = { PGX_DFMT, PXM_DFMT, PXM_DFMT, PXM_DFMT, BMP_DFMT, TIF_DFMT, RAW_DFMT, TGA_DFMT, PNG_DFMT, J2K_CFMT, JP2_CFMT, JPT_CFMT, J2K_CFMT, J2K_CFMT };
@@ -184,7 +184,7 @@ int get_file_format(const char *filename) {
 }
 
 /* -------------------------------------------------------------------------- */
-char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_dparameters_t *parameters){
+static char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_dparameters_t *parameters){
 	char image_filename[OPJ_PATH_LEN], infilename[OPJ_PATH_LEN],outfilename[OPJ_PATH_LEN],temp_ofname[OPJ_PATH_LEN];
 	char *temp_p, temp1[OPJ_PATH_LEN]="";
 
@@ -221,7 +221,7 @@ static int infile_format(const char *fname)
 	const char *s, *magic_s;
 	int ext_format, magic_format;
 	unsigned char buf[12];
-	unsigned int l_nb_read; 
+	size_t l_nb_read; 
 
 	reader = fopen(fname, "rb");
 
@@ -269,12 +269,12 @@ static int infile_format(const char *fname)
  * Parse the command line
  */
 /* -------------------------------------------------------------------------- */
-int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,img_fol_t *img_fol) {
+static int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,img_fol_t *img_fol) {
 	int totlen, c;
 	opj_option_t long_option[]={
-		{"ImgDir",REQ_ARG, NULL ,'y'},
+        {"ImgDir",REQ_ARG, NULL ,'y'}
 	};
-	const char optlist[] = "i:o:hv";
+    const char optlist[] = "i:o:f:hv";
 
 	totlen=sizeof(long_option);
 	img_fol->set_out_format = 0;
@@ -293,12 +293,13 @@ int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,i
 					case JP2_CFMT:
 						break;
 					case JPT_CFMT:
-						break;
-					default:
-						fprintf(stderr, 
-							"!! Unrecognized format for infile : %s [accept only *.j2k, *.jp2, *.jpc or *.jpt] !!\n\n", 
-							infile);
-						return 1;
+                    break;
+                default:
+                    fprintf(stderr,
+                            "[ERROR] Unknown input file format: %s \n"
+                            "        Known file formats are *.j2k, *.jp2, *.jpc or *.jpt\n",
+                            infile);
+                    return 1;
 				}
 				strncpy(parameters->infile, infile, sizeof(parameters->infile)-1);
 			}
@@ -313,6 +314,10 @@ int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,i
 			}
 			break;
 				
+				/* ----------------------------------------------------- */
+      case 'f': 			/* flag */
+        img_fol->flag = atoi(opj_optarg);
+        break;
 				/* ----------------------------------------------------- */
 
 			case 'h': 			/* display an help description */
@@ -331,38 +336,40 @@ int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *parameters,i
 
 			/* ----------------------------------------------------- */
 
-			case 'v':     		/* Verbose mode */
+            case 'v':     		/* Verbose mode */
 			{
-				parameters->m_verbose = 1;
+                parameters->m_verbose = 1;
 			}
 			break;
 			
 				/* ----------------------------------------------------- */
-			default:
-				fprintf(stderr,"WARNING -> this option is not valid \"-%c %s\"\n",c, opj_optarg);
-				break;
-		}
+        default:
+            fprintf(stderr, "[WARNING] An invalid option has been ignored.\n");
+            break;
+        }
 	}while(c != -1);
 
 	/* check for possible errors */
 	if(img_fol->set_imgdir==1){
 		if(!(parameters->infile[0]==0)){
-			fprintf(stderr, "Error: options -ImgDir and -i cannot be used together !!\n");
+            fprintf(stderr, "[ERROR] options -ImgDir and -i cannot be used together.\n");
 			return 1;
 		}
 		if(img_fol->set_out_format == 0){
-			fprintf(stderr, "Error: When -ImgDir is used, -OutFor <FORMAT> must be used !!\n");
-			fprintf(stderr, "Only one format allowed! Valid format PGM, PPM, PNM, PGX, BMP, TIF, RAW and TGA!!\n");
+            fprintf(stderr, "[ERROR] When -ImgDir is used, -OutFor <FORMAT> must be used.\n");
+            fprintf(stderr, "Only one format allowed.\n"
+                            "Valid format are PGM, PPM, PNM, PGX, BMP, TIF, RAW and TGA.\n");
 			return 1;
 		}
 		if(!(parameters->outfile[0] == 0)){
-			fprintf(stderr, "Error: options -ImgDir and -o cannot be used together !!\n");
+            fprintf(stderr, "[ERROR] options -ImgDir and -o cannot be used together\n");
 			return 1;
 		}
 	}else{
 		if(parameters->infile[0] == 0) {
+            fprintf(stderr, "[ERROR] Required parameter is missing\n");
 			fprintf(stderr, "Example: %s -i image.j2k\n",argv[0]);
-			fprintf(stderr, "    Try: %s -h\n",argv[0]);
+            fprintf(stderr, "   Help: %s -h\n",argv[0]);
 			return 1;
 		}
 	}
@@ -425,6 +432,7 @@ int main(int argc, char *argv[])
 
 	/* Initialize img_fol */
 	memset(&img_fol,0,sizeof(img_fol_t));
+  img_fol.flag = OPJ_IMG_INFO | OPJ_J2K_MH_INFO | OPJ_J2K_MH_IND;
 
 	/* Parse input and get user encoding parameters */
 	if(parse_cmdline_decoder(argc, argv, &parameters,&img_fol) == 1) {
@@ -438,8 +446,8 @@ int main(int argc, char *argv[])
 
 		dirptr=(dircnt_t*)malloc(sizeof(dircnt_t));
 		if(dirptr){
-			dirptr->filename_buf = (char*)malloc(num_images*OPJ_PATH_LEN*sizeof(char));	/* Stores at max 10 image file names*/
-			dirptr->filename = (char**) malloc(num_images*sizeof(char*));
+			dirptr->filename_buf = (char*)malloc((size_t)num_images*OPJ_PATH_LEN*sizeof(char));	/* Stores at max 10 image file names*/
+			dirptr->filename = (char**) malloc((size_t)num_images*sizeof(char*));
 
 			if(!dirptr->filename_buf){
 				return EXIT_FAILURE;
@@ -487,7 +495,7 @@ int main(int argc, char *argv[])
 		/* Read the input file and put it in memory */
 		/* ---------------------------------------- */
 
-		l_stream = opj_stream_create_default_file_stream_v3(parameters.infile,1);
+		l_stream = opj_stream_create_default_file_stream(parameters.infile,1);
 		if (!l_stream){
 			fprintf(stderr, "ERROR -> failed to create the stream from the file %s\n",parameters.infile);
 			return EXIT_FAILURE;
@@ -517,7 +525,7 @@ int main(int argc, char *argv[])
 			}
 			default:
 				fprintf(stderr, "skipping file..\n");
-				opj_stream_destroy_v3(l_stream);
+				opj_stream_destroy(l_stream);
 				continue;
 		}
 
@@ -529,7 +537,7 @@ int main(int argc, char *argv[])
 		/* Setup the decoder decoding parameters using user parameters */
 		if ( !opj_setup_decoder(l_codec, &parameters) ){
 			fprintf(stderr, "ERROR -> opj_dump: failed to setup the decoder\n");
-			opj_stream_destroy_v3(l_stream);
+			opj_stream_destroy(l_stream);
 			opj_destroy_codec(l_codec);
 			fclose(fout);
 			return EXIT_FAILURE;
@@ -538,21 +546,21 @@ int main(int argc, char *argv[])
 		/* Read the main header of the codestream and if necessary the JP2 boxes*/
 		if(! opj_read_header(l_stream, l_codec, &image)){
 			fprintf(stderr, "ERROR -> opj_dump: failed to read the header\n");
-			opj_stream_destroy_v3(l_stream);
+			opj_stream_destroy(l_stream);
 			opj_destroy_codec(l_codec);
 			opj_image_destroy(image);
 			fclose(fout);
 			return EXIT_FAILURE;
 		}
 
-		opj_dump_codec(l_codec, OPJ_IMG_INFO | OPJ_J2K_MH_INFO | OPJ_J2K_MH_IND, fout );
+		opj_dump_codec(l_codec, img_fol.flag, fout );
 
 		cstr_info = opj_get_cstr_info(l_codec);
 
 		cstr_index = opj_get_cstr_index(l_codec);
 
 		/* close the byte stream */
-		opj_stream_destroy_v3(l_stream);
+		opj_stream_destroy(l_stream);
 
 		/* free remaining structures */
 		if (l_codec) {

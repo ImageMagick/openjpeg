@@ -29,7 +29,7 @@ include_regular_expression("^.*$")
 #-----------------------------------------------------------------------------
 # OPENJPEG version number, useful for packaging and doxygen doc:
 set(OPENJPEG_VERSION_MAJOR 2)
-set(OPENJPEG_VERSION_MINOR 0)
+set(OPENJPEG_VERSION_MINOR 1)
 set(OPENJPEG_VERSION_BUILD 0)
 set(OPENJPEG_VERSION
   "${OPENJPEG_VERSION_MAJOR}.${OPENJPEG_VERSION_MINOR}.${OPENJPEG_VERSION_BUILD}")
@@ -47,11 +47,13 @@ set(PACKAGE_VERSION
 #   1.5   |  5
 #   1.5.1 |  5
 #   2.0   |  6
+#   2.0.1 |  6
+#   2.1   |  7
 # above is the recommendation by the OPJ team. If you really need to override this default,
 # you can specify your own OPENJPEG_SOVERSION at cmake configuration time:
 # cmake -DOPENJPEG_SOVERSION:STRING=42 /path/to/openjpeg
 if(NOT OPENJPEG_SOVERSION)
-  SET(OPENJPEG_SOVERSION 6)
+  SET(OPENJPEG_SOVERSION 7)
 endif(NOT OPENJPEG_SOVERSION)
 set(OPENJPEG_LIBRARY_PROPERTIES
   VERSION   "${OPENJPEG_VERSION_MAJOR}.${OPENJPEG_VERSION_MINOR}.${OPENJPEG_VERSION_BUILD}"
@@ -93,6 +95,8 @@ endif()
 
 # --------------------------------------------------------------------------
 # Install directories
+# Build DOCUMENTATION (not in ALL target and only if Doxygen is found)
+option(BUILD_DOC "Build the HTML documentation (with doxygen if available)." OFF)
 
 string(TOLOWER ${PROJECT_NAME} projectname)
 set(OPENJPEG_INSTALL_SUBDIR "${projectname}-${OPENJPEG_VERSION_MAJOR}.${OPENJPEG_VERSION_MINOR}")
@@ -117,12 +121,14 @@ if(NOT OPENJPEG_INSTALL_INCLUDE_DIR)
   set(OPENJPEG_INSTALL_INCLUDE_DIR "include/${OPENJPEG_INSTALL_SUBDIR}")
 endif()
 
+if(BUILD_DOC)
 if(NOT OPENJPEG_INSTALL_MAN_DIR)
   set(OPENJPEG_INSTALL_MAN_DIR "share/man/")
 endif()
 
 if(NOT OPENJPEG_INSTALL_DOC_DIR)
   set(OPENJPEG_INSTALL_DOC_DIR "share/doc/${OPENJPEG_INSTALL_SUBDIR}")
+endif()
 endif()
 
 if(NOT OPENJPEG_INSTALL_JNI_DIR)
@@ -263,8 +269,7 @@ configure_file(
  )
 
 #-----------------------------------------------------------------------------
-# Build DOCUMENTATION (not in ALL target and only if Doxygen is found)
-option(BUILD_DOC "Build the HTML documentation (with doxygen if available)." OFF)
+# build documentation in doc subdir:
 if(BUILD_DOC)
   add_subdirectory(doc)
 endif()
@@ -281,9 +286,8 @@ if(BUILD_TESTING)
     # They could be found via svn on the OpenJPEG google code project
     # svn checkout http://openjpeg.googlecode.com/svn/data (about 70 Mo)
     find_path(OPJ_DATA_ROOT README-OPJ-Data
-      PATHS
-      $ENV{OPJ_DATA_ROOT}
-      ${CMAKE_SOURCE_DIR}/../data
+      PATHS $ENV{OPJ_DATA_ROOT} ${CMAKE_SOURCE_DIR}/../data
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
       )
 
     # Add repository where to find tests
@@ -307,16 +311,25 @@ install( FILES ${OPENJPEG_BINARY_DIR}/OpenJPEGConfig.cmake
 
 #-----------------------------------------------------------------------------
 # install CHANGES and LICENSE
+if(BUILD_DOC)
 if(EXISTS ${OPENJPEG_SOURCE_DIR}/CHANGES)
   install(FILES CHANGES DESTINATION ${OPENJPEG_INSTALL_DOC_DIR})
 endif()
+
 install(FILES LICENSE DESTINATION ${OPENJPEG_INSTALL_DOC_DIR})
+endif()
 
 include (cmake/OpenJPEGCPack.cmake)
 
 #-----------------------------------------------------------------------------
 # pkgconfig support
+# enabled by default on Unix, disabled by default on other platforms
 if(UNIX)
+  option(BUILD_PKGCONFIG_FILES "Build and install pkg-config files" ON)
+else()
+  option(BUILD_PKGCONFIG_FILES "Build and install pkg-config files" OFF)
+endif()
+if(BUILD_PKGCONFIG_FILES)
   # install in lib and not share (see multi-arch note above)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/lib/openjp2/libopenjp2.pc.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/libopenjp2.pc @ONLY)

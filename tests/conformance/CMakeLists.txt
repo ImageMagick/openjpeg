@@ -59,7 +59,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P0-${filenameInput}-r0-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRefSub}r0.pgx
 #        -t ${TEMP}/c0${filenameInput}-r0.pgx
 #        -n ${nbComponents}
@@ -73,7 +73,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P0-${filenameInput}-r0-decode)
 
 #    add_test(NR-C0P0-${filenameInput}-r0-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRefSub}-r0.pgx
 #        -t ${TEMP}/c0${filenameInput}-r0.pgx
 #        -n ${nbComponents}
@@ -94,7 +94,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P0-${filenameInput}-r1-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRefSub}r1.pgx
 #        -t ${TEMP}/c0${filenameInput}-r1.pgx
 #        -n ${nbComponents}
@@ -108,7 +108,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P0-${filenameInput}-r1-decode)
 
 #    add_test(NR-C0P0-${filenameInput}-r1-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRefSub}-r1.pgx
 #        -t ${TEMP}/c0${filenameInput}-r1.pgx
 #        -n ${nbComponents}
@@ -130,7 +130,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P0-${filenameInput}-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRef}
 #        -t ${TEMP}/c0${filenameInput}.pgx
 #        -n ${nbComponents}
@@ -144,7 +144,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P0-${filenameInput}-decode)
 
 #    add_test(NR-C0P0-${filenameInput}-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRef}
 #        -t ${TEMP}/c0${filenameInput}.pgx
 #        -n ${nbComponents}
@@ -198,7 +198,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P1-${filenameInput}-r0-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRefSub}r0.pgx
 #        -t ${TEMP}/c0${filenameInput}-r0.pgx
 #        -n ${nbComponents}
@@ -212,7 +212,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P1-${filenameInput}-r0-decode)
 
 #    add_test(NR-C0P1-${filenameInput}-r0-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRefSub}-r0.pgx
 #        -t ${TEMP}/c0${filenameInput}-r0.pgx
 #        -n ${nbComponents}
@@ -233,7 +233,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P1-${filenameInput}-r3-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRefSub}r3.pgx
 #        -t ${TEMP}/c0${filenameInput}-r3.pgx
 #        -n ${nbComponents}
@@ -247,7 +247,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P1-${filenameInput}-r3-decode)
 
 #    add_test(NR-C0P1-${filenameInput}-r3-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRefSub}-r3.pgx
 #        -t ${TEMP}/c0${filenameInput}-r3.pgx
 #        -n ${nbComponents}
@@ -269,7 +269,7 @@ set(COMMENTCODEVAR FALSE)
 #        )
 
 #    add_test(ETS-C0P1-${filenameInput}-compare2ref
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_CONF}/${filenameRef}
 #        -t ${TEMP}/c0${filenameInput}.pgx
 #        -n ${nbComponents}
@@ -283,7 +283,7 @@ set(COMMENTCODEVAR FALSE)
 #                         ETS-C0P1-${filenameInput}-decode)
 
 #    add_test(NR-C0P1-${filenameInput}-compare2base
-#        ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+#        ${EXECUTABLE_OUTPUT_PATH}/compare_images
 #        -b ${BASELINE_NR}/opj_${filenameRef}
 #        -t ${TEMP}/c0${filenameInput}.pgx
 #        -n ${nbComponents}
@@ -327,15 +327,15 @@ foreach(numFileC1P0 RANGE 1 16)
   list(GET C1P0_PEAK_list ${numFileC1P0}  PEAK_limit)
   list(GET C1P0_MSE_list ${numFileC1P0}  MSE_limit)
 
-  add_test(ETS-C1P0-${filenameInput}-decode
-      ${EXECUTABLE_OUTPUT_PATH}/opj_decompress
+  add_test(NAME ETS-C1P0-${filenameInput}-decode
+      COMMAND opj_decompress
       -i ${INPUT_CONF}/${filenameInput}
       -o ${TEMP}/c1${filenameInput}.pgx
       -r ${ResFactor}
       )
 
-  add_test(ETS-C1P0-${filenameInput}-compare2ref
-      ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+  add_test(NAME ETS-C1P0-${filenameInput}-compare2ref
+      COMMAND compare_images
      -b ${BASELINE_CONF}/${filenameRef}
      -t ${TEMP}/c1${filenameInput}.pgx
      -n ${nbComponents}
@@ -348,8 +348,8 @@ foreach(numFileC1P0 RANGE 1 16)
                        PROPERTIES DEPENDS
                        ETS-C1P0-${filenameInput}-decode)
 
-  add_test(NR-C1P0-${filenameInput}-compare2base
-      ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+  add_test(NAME NR-C1P0-${filenameInput}-compare2base
+      COMMAND compare_images
      -b ${BASELINE_NR}/opj_${filenameRef}
      -t ${TEMP}/c1${filenameInput}.pgx
      -n ${nbComponents}
@@ -384,15 +384,15 @@ foreach(numFileC1P1 RANGE 1 7)
   list(GET C1P1_PEAK_list ${numFileC1P1}  PEAK_limit)
   list(GET C1P1_MSE_list ${numFileC1P1}  MSE_limit)
 
-  add_test(ETS-C1P1-${filenameInput}-decode
-      ${EXECUTABLE_OUTPUT_PATH}/opj_decompress
+  add_test(NAME ETS-C1P1-${filenameInput}-decode
+      COMMAND opj_decompress
       -i ${INPUT_CONF}/${filenameInput}
       -o ${TEMP}/c1${filenameInput}.pgx
       -r 0
       )
 
-  add_test(ETS-C1P1-${filenameInput}-compare2ref
-      ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+  add_test(NAME ETS-C1P1-${filenameInput}-compare2ref
+      COMMAND compare_images
      -b ${BASELINE_CONF}/${filenameRef}
      -t ${TEMP}/c1${filenameInput}.pgx
      -n ${nbComponents}
@@ -405,8 +405,8 @@ foreach(numFileC1P1 RANGE 1 7)
                        PROPERTIES DEPENDS
                        ETS-C1P1-${filenameInput}-decode)
 
-  add_test(NR-C1P1-${filenameInput}-compare2base
-      ${EXECUTABLE_OUTPUT_PATH}/comparePGXimages
+  add_test(NAME NR-C1P1-${filenameInput}-compare2base
+      COMMAND compare_images
      -b ${BASELINE_NR}/opj_${filenameRef}
      -t ${TEMP}/c1${filenameInput}.pgx
      -n ${nbComponents}
@@ -426,7 +426,8 @@ endforeach()
 # compare to ref file
 # non regression comparison
 
-# Tolerances given by Table G.1
+# Tolerances given by Part 4 - Table G.1
+# Peak is set to 4 only
 
 foreach(numFileJP2 RANGE 1 9)
 
@@ -434,39 +435,171 @@ foreach(numFileJP2 RANGE 1 9)
   set( filenameInput "file${numFileJP2}.jp2" )
   set( filenameRef   jp2_${numFileJP2}.tif )
 
-  # Get corresponding tests parameters
-  list(GET JP2_PEAK_list ${numFileJP2}  PEAK_limit)
+  add_test(NAME ETS-JP2-${filenameInput}-decode
+    COMMAND opj_decompress
+    -i ${INPUT_CONF}/${filenameInput}
+    -o ${TEMP}/${filenameInput}.tif
+  )
 
-  add_test(ETS-JP2-${filenameInput}-decode
-      ${EXECUTABLE_OUTPUT_PATH}/opj_decompress
-      -i ${INPUT_CONF}/${filenameInput}
-      -o ${TEMP}/${filenameInput}.tif
-      )
-#
-# FIXME: Need to implement a compare tif images function
-#
-#  add_test(ETS-JP2-${filenameInput}-compare2ref
-#      ${EXECUTABLE_OUTPUT_PATH}/compareTIFimages
-#     -b ${BASELINE_CONF}/${filenameRef_tif}
-#     -t ${TEMP}/${filenameInput}.pgx
-#     -p 4
-#     )
-#
-#  set_tests_properties(ETS-JP2-${filenameInput}-compare2ref
-#                       PROPERTIES DEPENDS
-#                       ETS-JP2-${filenameInput}-decode)
-#
-#  add_test(NR-JP2-${filenameInput}-compare2base
-#      ${EXECUTABLE_OUTPUT_PATH}/compareTIFimages
-#     -b ${BASELINE_NR}/opj_${filenameRef}
-#     -t ${TEMP}/${filenameInput}.tif
-#     -d
-#     )
-#
-#  set_tests_properties(NR-JP2-${filenameInput}-compare2base
-#                       PROPERTIES DEPENDS
-#                       ETS-JP2-${filenameInput}-decode)
+  add_test(NAME ETS-JP2-${filenameInput}-compare2ref
+    COMMAND compare_images
+    -b ${BASELINE_CONF}/${filenameRef}
+    -t ${TEMP}/${filenameInput}.tif
+    -n 3
+    -p 4:4:4
+    -m 1:1:1
+    -s b_t_
+  )
 
+  set_tests_properties(ETS-JP2-${filenameInput}-compare2ref
+    PROPERTIES DEPENDS
+    ETS-JP2-${filenameInput}-decode)
+
+  add_test(NAME NR-JP2-${filenameInput}-compare2base
+    COMMAND compare_images
+    -b ${BASELINE_NR}/opj_${filenameRef}
+    -t ${TEMP}/${filenameInput}.tif
+    -n 3
+    -d
+    -s b_t_
+  )
+
+  set_tests_properties(NR-JP2-${filenameInput}-compare2base
+    PROPERTIES DEPENDS
+    ETS-JP2-${filenameInput}-decode)
+
+endforeach()
+
+#--------------------------------------------------------------------------
+# Tests about Kakadu/J2K file
+# try to decode
+# compare to ref file
+# non regression comparison
+
+# Tolerances given by ???
+
+set(kdu_j2k_conf_files
+  a1_mono
+  a2_colr
+  a3_mono
+  a4_colr
+  a5_mono
+  a6_mono_colr
+  b1_mono
+  b2_mono
+  b3_mono
+  c1_mono
+  c2_mono
+  d1_colr
+  d2_colr
+  e1_colr
+  e2_colr
+  f1_mono
+  f2_mono
+  g1_colr
+  g2_colr
+  g3_colr
+  g4_colr
+)
+
+foreach(kdu_file ${kdu_j2k_conf_files})
+
+  # Build filenames
+  set( filenameInput "${kdu_file}.j2c" )
+  set( filenameRef   "${kdu_file}.ppm" )
+
+  add_test(NAME ETS-KDU-${filenameInput}-decode
+    COMMAND opj_decompress
+    -i ${INPUT_CONF}/${filenameInput}
+    -o ${TEMP}/${filenameInput}.ppm
+  )
+
+  if("${kdu_file}" STREQUAL "a6_mono_colr")
+    set(kdu_test_args -n 4 -s b_t_ )
+    set(kdu_test_args_tol -p 4:4:4:4 -m 1:1:1:1)
+  else()
+    set(kdu_test_args -n 1 )
+    set(kdu_test_args_tol -p 4:4:4 -m 1:1:1)
+  endif()
+
+  add_test(NAME ETS-KDU-${filenameInput}-compare2ref
+    COMMAND compare_images
+    -b ${BASELINE_CONF}/${filenameRef}
+    -t ${TEMP}/${filenameInput}.ppm
+    ${kdu_test_args}
+    ${kdu_test_args_tol}
+  )
+
+  set_tests_properties(ETS-KDU-${filenameInput}-compare2ref
+    PROPERTIES DEPENDS
+    ETS-KDU-${filenameInput}-decode)
+
+  add_test(NAME NR-KDU-${filenameInput}-compare2base
+    COMMAND compare_images
+    -b ${BASELINE_NR}/opj_${filenameRef}
+    -t ${TEMP}/${filenameInput}.ppm
+    ${kdu_test_args}
+    -d
+  )
+
+  set_tests_properties(NR-KDU-${filenameInput}-compare2base
+    PROPERTIES DEPENDS
+    ETS-KDU-${filenameInput}-decode)
+endforeach()
+
+#--------------------------------------------------------------------------
+# Tests about Richter/J2K file
+# try to decode
+# compare to ref file
+# non regression comparison
+
+# Tolerances given by ???
+
+set(richter_jp2_conf_files
+  subsampling_1
+  subsampling_2
+  zoo1
+  zoo2
+)
+
+foreach(r_file ${richter_jp2_conf_files})
+
+  # Build filenames
+  set( filenameInput "${r_file}.jp2" )
+  set( filenameRef   "${r_file}.ppm" )
+
+  add_test(NAME ETS-RIC-${filenameInput}-decode
+    COMMAND opj_decompress
+    -i ${INPUT_CONF}/${filenameInput}
+    -o ${TEMP}/${filenameInput}.ppm
+  )
+
+  set(ric_test_args -n 1)
+
+  add_test(NAME ETS-RIC-${filenameInput}-compare2ref
+    COMMAND compare_images
+    -b ${BASELINE_CONF}/${filenameRef}
+    -t ${TEMP}/${filenameInput}.ppm
+    ${ric_test_args}
+    -p 4:4:4
+    -m 2:2:2
+  )
+
+  set_tests_properties(ETS-RIC-${filenameInput}-compare2ref
+    PROPERTIES DEPENDS
+    ETS-RIC-${filenameInput}-decode)
+
+  add_test(NAME NR-RIC-${filenameInput}-compare2base
+    COMMAND compare_images
+    -b ${BASELINE_NR}/opj_${filenameRef}
+    -t ${TEMP}/${filenameInput}.ppm
+    ${ric_test_args}
+    -d
+  )
+
+  set_tests_properties(NR-RIC-${filenameInput}-compare2base
+    PROPERTIES DEPENDS
+    ETS-RIC-${filenameInput}-decode)
 endforeach()
 
 #--------------------------------------------------------------------------#
@@ -489,14 +622,14 @@ foreach(numFileP0 RANGE 1 16)
   get_filename_component(filenameRefSub ${filenameInput} NAME_WE)
 
 
-  add_test(NR-${filenameInput}-dump
-      ${EXECUTABLE_OUTPUT_PATH}/opj_dump
+  add_test(NAME NR-${filenameInput}-dump
+      COMMAND opj_dump
      -i ${INPUT_CONF}/${filenameInput}
      -o ${TEMP}/${filenameInput}.txt
      )
 
-  add_test(NR-${filenameInput}-compare_dump2base
-      ${EXECUTABLE_OUTPUT_PATH}/compare_dump_files
+  add_test(NAME NR-${filenameInput}-compare_dump2base
+      COMMAND compare_dump_files
      -b ${BASELINE_NR}/opj_v2_${filenameRefSub}.txt
      -t ${TEMP}/${filenameInput}.txt
      )
@@ -518,14 +651,14 @@ foreach(numFileP1 RANGE 1 7)
   set( filenameInput p1_0${numFileP1}.j2k )
   get_filename_component(filenameInputSub ${filenameInput} NAME_WE)
 
-  add_test(NR-${filenameInput}-dump
-      ${EXECUTABLE_OUTPUT_PATH}/opj_dump
+  add_test(NAME NR-${filenameInput}-dump
+      COMMAND opj_dump
      -i ${INPUT_CONF}/${filenameInput}
      -o ${TEMP}/${filenameInput}.txt
      )
 
-  add_test(NR-${filenameInput}-compare_dump2base
-      ${EXECUTABLE_OUTPUT_PATH}/compare_dump_files
+  add_test(NAME NR-${filenameInput}-compare_dump2base
+      COMMAND compare_dump_files
      -b ${BASELINE_NR}/opj_v2_${filenameInputSub}.txt
      -t ${TEMP}/${filenameInput}.txt
      )
@@ -547,14 +680,14 @@ foreach(numFileJP2 RANGE 1 9)
   set( filenameInput "file${numFileJP2}.jp2" )
   get_filename_component(filenameInputSub ${filenameInput} NAME_WE)
 
-  add_test(NR-${filenameInput}-dump
-      ${EXECUTABLE_OUTPUT_PATH}/opj_dump
+  add_test(NAME NR-${filenameInput}-dump
+      COMMAND opj_dump
      -i ${INPUT_CONF}/${filenameInput}
      -o ${TEMP}/${filenameInput}.txt
      )
 
-  add_test(NR-${filenameInput}-compare_dump2base
-      ${EXECUTABLE_OUTPUT_PATH}/compare_dump_files
+  add_test(NAME NR-${filenameInput}-compare_dump2base
+      COMMAND compare_dump_files
      -b ${BASELINE_NR}/opj_v2_${filenameInputSub}.txt
      -t ${TEMP}/${filenameInput}.txt
      )
