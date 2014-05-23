@@ -1,5 +1,7 @@
 /* create opj_config.h for CMake */
+#if (_MSC_VER > 1500)
 #define OPJ_HAVE_STDINT_H 1
+#endif
 
 /*--------------------------------------------------------------------------*/
 /* OpenJPEG Versioning                                                      */
