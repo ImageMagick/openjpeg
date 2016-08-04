@@ -1,5 +1,5 @@
 /*
- * $Id: query_parser.h 2835 2014-04-03 15:30:57Z antonin $
+ * $Id$
  *
  * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
  * Copyright (c) 2002-2014, Professor Benoit Macq

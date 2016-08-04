@@ -36,6 +36,7 @@ set(OPENJPIP_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/session_manager.c
   ${CMAKE_CURRENT_SOURCE_DIR}/jpip_parser.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sock_manager.c
+  ${OPENJPEG_SOURCE_DIR}/src/lib/openjp2/opj_malloc.c
   )
 
 set(SERVER_SRCS
@@ -61,6 +62,9 @@ endif()
 add_library(openjpip ${OPENJPIP_SRCS} ${LOCAL_SRCS})
 set_target_properties(openjpip
   PROPERTIES ${OPENJPEG_LIBRARY_PROPERTIES})
+if(${CMAKE_VERSION} VERSION_GREATER "2.8.11")
+  target_compile_options(openjpip PRIVATE ${OPENJPEG_LIBRARY_COMPILE_OPTIONS})
+endif()
 target_link_libraries(openjpip ${OPENJPEG_LIBRARY_NAME})
 if(WIN32)
   # add Winsock on windows+mingw

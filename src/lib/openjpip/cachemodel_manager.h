@@ -1,5 +1,5 @@
 /*
- * $Id: cachemodel_manager.h 2835 2014-04-03 15:30:57Z antonin $
+ * $Id$
  *
  * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
  * Copyright (c) 2002-2014, Professor Benoit Macq
@@ -80,7 +80,7 @@ void print_cachemodel( cachemodel_param_t cachemodel);
 /**
  * search a cache model of a target
  *
- * @param[in] target         refering target
+ * @param[in] target         referring target
  * @param[in] cachemodellist cache model list
  * @return                   found cache model pointer
  */

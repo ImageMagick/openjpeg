@@ -1,5 +1,5 @@
 /*
- * $Id: target_manager.h 2835 2014-04-03 15:30:57Z antonin $
+ * $Id$
  *
  * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
  * Copyright (c) 2002-2014, Professor Benoit Macq
@@ -46,7 +46,7 @@ typedef struct target_param{
 #endif
   int csn;                        /**< codestream number                                  */
   index_param_t *codeidx;         /**< index information of codestream                    */
-  int num_of_use;                 /**< numbers of sessions refering to this target        */
+  int num_of_use;                 /**< numbers of sessions referring to this target       */
   OPJ_BOOL jppstream;                 /**< if this target can return JPP-stream               */
   OPJ_BOOL jptstream;                 /**< if this target can return JPP-stream               */
   struct target_param *next;      /**< pointer to the next target                         */

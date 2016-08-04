@@ -64,7 +64,7 @@ void * OPJ_CALLCONV opj_calloc(size_t _NumOfElements, size_t _SizeOfElements);
 #endif
 
 /**
-Allocate memory aligned to a 16 byte boundry
+Allocate memory aligned to a 16 byte boundary
 @param size Bytes to allocate
 @return Returns a void pointer to the allocated space, or NULL if there is insufficient memory available
 */
@@ -88,7 +88,7 @@ Allocate memory aligned to a 16 byte boundry
 	/* Linux x86_64 and OSX always align allocations to 16 bytes */
 	#elif !defined(__amd64__) && !defined(__APPLE__) && !defined(_AIX)
 		#define HAVE_MEMALIGN
-		#include <malloc.h>			
+		#include <malloc.h>
 	#endif
 #endif
 

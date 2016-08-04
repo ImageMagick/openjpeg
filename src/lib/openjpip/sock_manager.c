@@ -1,5 +1,5 @@
 /*
- * $Id: sock_manager.c 2855 2014-04-24 11:24:56Z mathieu.malaterre $
+ * $Id$
  *
  * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
  * Copyright (c) 2002-2014, Professor Benoit Macq

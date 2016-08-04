@@ -102,12 +102,6 @@
  ==========================================================
 */
 
-/* Ignore GCC attributes if this is not GCC */
-#ifndef __GNUC__
-	#define __attribute__(x) /* __attribute__(x) */
-#endif
-
-
 /* Are restricted pointers available? (C99) */
 #if (__STDC_VERSION__ != 199901L)
 	/* Not a C99 compiler */
@@ -118,53 +112,73 @@
 	#endif
 #endif
 
-  /* MSVC before 2013 and Borland C do not have lrintf */
+#ifdef __has_attribute
+	#if __has_attribute(no_sanitize)
+		#define OPJ_NOSANITIZE(kind) __attribute__((no_sanitize(kind)))
+	#endif
+#endif
+#ifndef OPJ_NOSANITIZE
+	#define OPJ_NOSANITIZE(kind)
+#endif
+
+
+/* MSVC before 2013 and Borland C do not have lrintf */
 #if defined(_MSC_VER)
 #include <intrin.h>
-static INLINE long opj_lrintf(float f) {
+static INLINE long opj_lrintf(float f){
 #ifdef _M_X64
-  return _mm_cvt_ss2si(_mm_load_ss(&f));
+	return _mm_cvt_ss2si(_mm_load_ss(&f));
 
-  /* commented out line breaks many tests */
+	/* commented out line breaks many tests */
   /* return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f)); */
 #elif defined(_M_IX86)
-  int i;
-  _asm {
-    fld f
-      fistp i
-  };
-
-  return i;
+    int i;
+     _asm{
+        fld f
+        fistp i
+    };
+ 
+    return i;
 #else 
-  return (long)((f>0.0f) ? (f + 0.5f) : (f - 0.5f));
+	return (long)((f>0.0f) ? (f + 0.5f) : (f - 0.5f));
 #endif
 }
 #elif defined(__BORLANDC__)
 static INLINE long opj_lrintf(float f) {
 #ifdef _M_X64
-  return (long)((f>0.0f) ? (f + 0.5f) : (f - 0.5f));
+     return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f));
 #else
-  int i;
+	int i;
 
-  _asm {
-    fld f
-      fistp i
-  };
+	_asm {
+		fld f
+			fistp i
+	};
 
-  return i;
+	return i;
 #endif
 }
 #else
 static INLINE long opj_lrintf(float f) {
-  return lrintf(f);
+	return lrintf(f);
 }
+#endif
+
+#if defined(_MSC_VER) && (_MSC_VER < 1400)
+	#define vsnprintf _vsnprintf
+#endif
+
+/* MSVC x86 is really bad at doing int64 = int32 * int32 on its own. Use intrinsic. */
+#if defined(_MSC_VER) && (_MSC_VER >= 1400) && !defined(__INTEL_COMPILER) && defined(_M_IX86)
+#	include <intrin.h>
+#	pragma intrinsic(__emul)
 #endif
 
 #include "opj_inttypes.h"
 #include "opj_clock.h"
 #include "opj_malloc.h"
-#include "function_list.h"
 #include "event.h"
+#include "function_list.h"
 #include "bio.h"
 #include "cio.h"
 

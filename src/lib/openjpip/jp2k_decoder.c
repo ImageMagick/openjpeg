@@ -1,5 +1,5 @@
 /*
- * $Id: jp2k_decoder.c 2852 2014-04-24 08:51:29Z antonin $
+ * $Id$
  *
  * Copyright (c) 2002-2014, Universite catholique de Louvain (UCL), Belgium
  * Copyright (c) 2002-2014, Professor Benoit Macq

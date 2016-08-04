@@ -57,6 +57,7 @@
 #include "index.h"
 
 #include "format_defs.h"
+#include "opj_string.h"
 
 typedef struct dircnt{
 	/** Buffer for holding images read from Directory*/
@@ -134,6 +135,7 @@ static int get_num_images(char *imgdirpath){
 			continue;
 		num_images++;
 	}
+	closedir(dir);
 	return num_images;
 }
 
@@ -160,6 +162,7 @@ static int load_images(dircnt_t *dirptr, char *imgdirpath){
 		strcpy(dirptr->filename[i],content->d_name);
 		i++;
 	}
+	closedir(dir);
 	return 0;	
 }
 
@@ -168,7 +171,7 @@ static int get_file_format(const char *filename) {
 	unsigned int i;
 	static const char *extension[] = {"pgx", "pnm", "pgm", "ppm", "bmp","tif", "raw", "tga", "png", "j2k", "jp2", "jpt", "j2c", "jpc"  };
 	static const int format[] = { PGX_DFMT, PXM_DFMT, PXM_DFMT, PXM_DFMT, BMP_DFMT, TIF_DFMT, RAW_DFMT, TGA_DFMT, PNG_DFMT, J2K_CFMT, JP2_CFMT, JPT_CFMT, J2K_CFMT, J2K_CFMT };
-	char * ext = strrchr(filename, '.');
+	const char *ext = strrchr(filename, '.');
 	if (ext == NULL)
 		return -1;
 	ext++;
@@ -194,7 +197,9 @@ static char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_d
 	if (parameters->decod_format == -1)
 		return 1;
 	sprintf(infilename,"%s/%s",img_fol->imgdirpath,image_filename);
-	strncpy(parameters->infile, infilename, sizeof(infilename));
+	if (opj_strcpy_s(parameters->infile, sizeof(parameters->infile), infilename) != 0) {
+		return 1;
+	}
 
 	/*Set output file*/
 	strcpy(temp_ofname,strtok(image_filename,"."));
@@ -204,7 +209,9 @@ static char get_next_file(int imageno,dircnt_t *dirptr,img_fol_t *img_fol, opj_d
 	}
 	if(img_fol->set_out_format==1){
 		sprintf(outfilename,"%s/%s.%s",img_fol->imgdirpath,temp_ofname,img_fol->out_format);
-		strncpy(parameters->outfile, outfilename, sizeof(outfilename));
+		if (opj_strcpy_s(parameters->outfile, sizeof(parameters->outfile), outfilename) != 0) {
+			return 1;
+		}
 	}
 	return 0;
 }
@@ -301,7 +308,10 @@ static int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *param
                             infile);
                     return 1;
 				}
-				strncpy(parameters->infile, infile, sizeof(parameters->infile)-1);
+				if (opj_strcpy_s(parameters->infile, sizeof(parameters->infile), infile) != 0) {
+					fprintf(stderr, "[ERROR] Path is too long\n");
+					return 1;
+				}
 			}
 			break;
 
@@ -309,8 +319,10 @@ static int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *param
 
 			case 'o':     /* output file */
 			{
-			  char *outfile = opj_optarg;
-			  strncpy(parameters->outfile, outfile, sizeof(parameters->outfile)-1);
+				if (opj_strcpy_s(parameters->outfile, sizeof(parameters->outfile), opj_optarg) != 0) {
+					fprintf(stderr, "[ERROR] Path is too long\n");
+					return 1;
+				}
 			}
 			break;
 				
@@ -329,6 +341,9 @@ static int parse_cmdline_decoder(int argc, char **argv, opj_dparameters_t *param
 			case 'y':			/* Image Directory path */
 			{
 				img_fol->imgdirpath = (char*)malloc(strlen(opj_optarg) + 1);
+				if(img_fol->imgdirpath == NULL){
+					return 1;
+				}
 				strcpy(img_fol->imgdirpath,opj_optarg);
 				img_fol->set_imgdir=1;
 			}
@@ -421,12 +436,6 @@ int main(int argc, char *argv[])
 	img_fol_t img_fol;
 	dircnt_t *dirptr = NULL;
 
-#ifdef MSD
-	OPJ_BOOL l_go_on = OPJ_TRUE;
-	OPJ_UINT32 l_max_data_size = 1000;
-	OPJ_BYTE * l_data = (OPJ_BYTE *) malloc(1000);
-#endif
-
 	/* Set decoding parameters to default values */
 	opj_set_default_decoder_parameters(&parameters);
 
@@ -436,6 +445,8 @@ int main(int argc, char *argv[])
 
 	/* Parse input and get user encoding parameters */
 	if(parse_cmdline_decoder(argc, argv, &parameters,&img_fol) == 1) {
+		if(img_fol.imgdirpath) free(img_fol.imgdirpath);
+
 		return EXIT_FAILURE;
 	}
 
@@ -445,25 +456,31 @@ int main(int argc, char *argv[])
 		num_images=get_num_images(img_fol.imgdirpath);
 
 		dirptr=(dircnt_t*)malloc(sizeof(dircnt_t));
-		if(dirptr){
-			dirptr->filename_buf = (char*)malloc((size_t)num_images*OPJ_PATH_LEN*sizeof(char));	/* Stores at max 10 image file names*/
-			dirptr->filename = (char**) malloc((size_t)num_images*sizeof(char*));
-
-			if(!dirptr->filename_buf){
-				return EXIT_FAILURE;
-			}
-
-			for(it_image=0;it_image<num_images;it_image++){
-				dirptr->filename[it_image] = dirptr->filename_buf + it_image*OPJ_PATH_LEN;
-			}
-		}
-		if(load_images(dirptr,img_fol.imgdirpath)==1){
+		if(!dirptr){
 			return EXIT_FAILURE;
+		}
+		dirptr->filename_buf = (char*)malloc((size_t)num_images*OPJ_PATH_LEN*sizeof(char));	/* Stores at max 10 image file names*/
+		if(!dirptr->filename_buf){
+			free(dirptr);
+			return EXIT_FAILURE;
+		}
+		dirptr->filename = (char**) malloc((size_t)num_images*sizeof(char*));
+
+		if(!dirptr->filename){
+			goto fails;
+		}
+
+		for(it_image=0;it_image<num_images;it_image++){
+			dirptr->filename[it_image] = dirptr->filename_buf + it_image*OPJ_PATH_LEN;
+		}
+		
+		if(load_images(dirptr,img_fol.imgdirpath)==1){
+			goto fails;
 		}
 
 		if (num_images==0){
 			fprintf(stdout,"Folder is empty\n");
-			return EXIT_FAILURE;
+			goto fails;
 		}
 	}else{
 		num_images=1;
@@ -474,7 +491,7 @@ int main(int argc, char *argv[])
 		fout = fopen(parameters.outfile,"w");
 		if (!fout){
 			fprintf(stderr, "ERROR -> failed to open %s for writing\n", parameters.outfile);
-			return EXIT_FAILURE;
+			goto fails;
 		}
 	}
 	else
@@ -498,7 +515,7 @@ int main(int argc, char *argv[])
 		l_stream = opj_stream_create_default_file_stream(parameters.infile,1);
 		if (!l_stream){
 			fprintf(stderr, "ERROR -> failed to create the stream from the file %s\n",parameters.infile);
-			return EXIT_FAILURE;
+			goto fails;
 		}
 
 		/* Read the JPEG2000 stream */
@@ -540,7 +557,7 @@ int main(int argc, char *argv[])
 			opj_stream_destroy(l_stream);
 			opj_destroy_codec(l_codec);
 			fclose(fout);
-			return EXIT_FAILURE;
+			goto fails;
 		}
 
 		/* Read the main header of the codestream and if necessary the JP2 boxes*/
@@ -550,7 +567,7 @@ int main(int argc, char *argv[])
 			opj_destroy_codec(l_codec);
 			opj_image_destroy(image);
 			fclose(fout);
-			return EXIT_FAILURE;
+			goto fails;
 		}
 
 		opj_dump_codec(l_codec, img_fol.flag, fout );
@@ -582,4 +599,12 @@ int main(int argc, char *argv[])
 	fclose(fout);
 
   return EXIT_SUCCESS;
+
+fails:
+	if(dirptr){
+		if(dirptr->filename) free(dirptr->filename);
+		if(dirptr->filename_buf) free(dirptr->filename_buf);
+		free(dirptr);
+	}
+	return EXIT_FAILURE;
 }
