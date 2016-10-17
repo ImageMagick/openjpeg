@@ -33,7 +33,7 @@ include_regular_expression("^.*$")
 # OPENJPEG version number, useful for packaging and doxygen doc:
 set(OPENJPEG_VERSION_MAJOR 2)
 set(OPENJPEG_VERSION_MINOR 1)
-set(OPENJPEG_VERSION_BUILD 1)
+set(OPENJPEG_VERSION_BUILD 2)
 set(OPENJPEG_VERSION
   "${OPENJPEG_VERSION_MAJOR}.${OPENJPEG_VERSION_MINOR}.${OPENJPEG_VERSION_BUILD}")
 set(PACKAGE_VERSION
@@ -53,6 +53,7 @@ set(PACKAGE_VERSION
 #   2.0.1 |  6
 #   2.1   |  7
 #   2.1.1 |  7
+#   2.1.2 |  7
 # above is the recommendation by the OPJ team. If you really need to override this default,
 # you can specify your own OPENJPEG_SOVERSION at cmake configuration time:
 # cmake -DOPENJPEG_SOVERSION:STRING=42 /path/to/openjpeg
@@ -67,7 +68,7 @@ set(OPENJPEG_LIBRARY_PROPERTIES
 # --------------------------------------------------------------------------
 # Path to additional CMake modules
 set(CMAKE_MODULE_PATH
-    ${CMAKE_SOURCE_DIR}/cmake
+    ${${OPENJPEG_NAMESPACE}_SOURCE_DIR}/cmake
     ${CMAKE_MODULE_PATH})
 
 # --------------------------------------------------------------------------
@@ -163,8 +164,8 @@ TEST_BIG_ENDIAN(OPJ_BIG_ENDIAN)
 #-----------------------------------------------------------------------------
 # Setup file for setting custom ctest vars
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/CTestCustom.cmake.in
-  ${CMAKE_BINARY_DIR}/CTestCustom.cmake
+  ${${OPENJPEG_NAMESPACE}_SOURCE_DIR}/cmake/CTestCustom.cmake.in
+  ${${OPENJPEG_NAMESPACE}_BINARY_DIR}/CTestCustom.cmake
   @ONLY
   )
 
@@ -226,7 +227,7 @@ CHECK_INCLUDE_FILE("unistd.h"       HAVE_UNISTD_H)
 include(TestLargeFiles)
 OPJ_TEST_LARGE_FILES(OPJ_HAVE_LARGEFILES)
 
-# Allocating Aligned Memory Blocks
+# Allocating Aligned Memory Blocks
 include(CheckIncludeFiles)
 check_include_files(malloc.h OPJ_HAVE_MALLOC_H)
 include(CheckSymbolExists)
@@ -249,6 +250,7 @@ if(BUILD_JPIP_SERVER)
   endif()
 endif()
 add_subdirectory(src/lib)
+option(BUILD_LUTS_GENERATOR "Build utility to generate t1_luts.h" OFF)
 
 #-----------------------------------------------------------------------------
 # Build Applications
@@ -322,8 +324,8 @@ endif()
 #-----------------------------------------------------------------------------
 # install all targets referenced as OPENJPEGTargets
 install(EXPORT OpenJPEGTargets DESTINATION ${OPENJPEG_INSTALL_PACKAGE_DIR})
-configure_file( ${OPENJPEG_SOURCE_DIR}/cmake/OpenJPEGConfig.cmake.in
-  ${OPENJPEG_BINARY_DIR}/OpenJPEGConfig.cmake
+configure_file( ${${OPENJPEG_NAMESPACE}_SOURCE_DIR}/cmake/OpenJPEGConfig.cmake.in
+  ${${OPENJPEG_NAMESPACE}_BINARY_DIR}/OpenJPEGConfig.cmake
   @ONLY
 )
 install( FILES ${OPENJPEG_BINARY_DIR}/OpenJPEGConfig.cmake

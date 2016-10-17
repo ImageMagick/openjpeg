@@ -5,7 +5,7 @@ install( FILES  ${CMAKE_CURRENT_BINARY_DIR}/opj_config.h
  DESTINATION ${OPENJPEG_INSTALL_INCLUDE_DIR} COMPONENT Headers)
 
 include_directories(
-  ${OPENJPEG_BINARY_DIR}/src/lib/openjp2 # opj_config.h and opj_config_private.h
+  ${${OPENJPEG_NAMESPACE}_BINARY_DIR}/src/lib/openjp2 # opj_config.h and opj_config_private.h
 )
 # Defines the source code for the library
 set(OPENJPEG_SRCS
@@ -110,11 +110,13 @@ install(
   DESTINATION ${OPENJPEG_INSTALL_MAN_DIR}/man3)
 endif()
 
-# internal utilities to generate t1_luts.h (part of the jp2 lib)
+if(BUILD_LUTS_GENERATOR)
+# internal utility to generate t1_luts.h (part of the jp2 lib)
 # no need to install:
-add_executable(t1_generate_luts t1_generate_luts.c)
-if(UNIX)
-  target_link_libraries(t1_generate_luts m)
+  add_executable(t1_generate_luts t1_generate_luts.c)
+  if(UNIX)
+    target_link_libraries(t1_generate_luts m)
+  endif()
 endif()
 
 # Experimental option; let's how cppcheck performs

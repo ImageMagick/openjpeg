@@ -146,6 +146,8 @@ opj_compress -i @INPUT_NR_PATH@/flower-minisblack-11.tif -o @TEMP_PATH@/flower-m
 opj_compress -i @INPUT_NR_PATH@/flower-minisblack-13.tif -o @TEMP_PATH@/flower-minisblack-13.tif.jp2
 opj_compress -i @INPUT_NR_PATH@/flower-minisblack-15.tif -o @TEMP_PATH@/flower-minisblack-15.tif.jp2
 
+# issue 843 Crash with invalid ppm file
+!opj_compress -i @INPUT_NR_PATH@/issue843.ppm -o @TEMP_PATH@/issue843.ppm.jp2
 
 # DECODER TEST SUITE
 opj_decompress -i  @INPUT_NR_PATH@/Bretagne2.j2k -o @TEMP_PATH@/Bretagne2.j2k.pgx
@@ -564,3 +566,11 @@ opj_decompress -i @INPUT_NR_PATH@/issue726.j2k -o @TEMP_PATH@/issue726.png
 # issue 775
 !opj_decompress -i @INPUT_NR_PATH@/issue775.j2k -o @TEMP_PATH@/issue775.png
 !opj_decompress -i @INPUT_NR_PATH@/issue775-2.j2k -o @TEMP_PATH@/issue775-2.png
+# issue 818
+opj_decompress -i @INPUT_NR_PATH@/issue818.jp2 -o @TEMP_PATH@/issue818.png
+# issue 823
+!opj_decompress -i @INPUT_NR_PATH@/issue823.jp2 -o @TEMP_PATH@/issue823.png
+# issue 826
+!opj_decompress -i @INPUT_NR_PATH@/issue826.jp2 -o @TEMP_PATH@/issue826.png
+# issue 820
+!opj_decompress -i @INPUT_NR_PATH@/issue820.jp2 -o @TEMP_PATH@/issue820.png
