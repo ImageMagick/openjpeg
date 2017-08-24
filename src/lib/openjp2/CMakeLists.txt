@@ -9,6 +9,8 @@ include_directories(
 )
 # Defines the source code for the library
 set(OPENJPEG_SRCS
+  ${CMAKE_CURRENT_SOURCE_DIR}/thread.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/thread.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bio.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bio.h
   ${CMAKE_CURRENT_SOURCE_DIR}/cio.c
@@ -29,14 +31,13 @@ set(OPENJPEG_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/mct.h
   ${CMAKE_CURRENT_SOURCE_DIR}/mqc.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mqc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mqc_inl.h
   ${CMAKE_CURRENT_SOURCE_DIR}/openjpeg.c
   ${CMAKE_CURRENT_SOURCE_DIR}/openjpeg.h
   ${CMAKE_CURRENT_SOURCE_DIR}/opj_clock.c
   ${CMAKE_CURRENT_SOURCE_DIR}/opj_clock.h
   ${CMAKE_CURRENT_SOURCE_DIR}/pi.c
   ${CMAKE_CURRENT_SOURCE_DIR}/pi.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/raw.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/raw.h
   ${CMAKE_CURRENT_SOURCE_DIR}/t1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/t1.h
   ${CMAKE_CURRENT_SOURCE_DIR}/t2.c
@@ -73,6 +74,11 @@ if(OPJ_DISABLE_TPSOT_FIX)
   add_definitions(-DOPJ_DISABLE_TPSOT_FIX)
 endif()
 
+# Special case for old i586-mingw32msvc-gcc cross compiler
+if(NOT WIN32 AND CMAKE_COMPILER_IS_GNUCC AND CMAKE_C_COMPILER MATCHES ".*mingw32msvc.*" )
+  set(WIN32 YES)
+endif()
+
 # Build the library
 if(WIN32)
   if(BUILD_SHARED_LIBS)
@@ -80,18 +86,26 @@ if(WIN32)
   else()
     add_definitions(-DOPJ_STATIC)
   endif()
+  add_library(${OPENJPEG_LIBRARY_NAME} ${OPENJPEG_SRCS})
+  set(INSTALL_LIBS ${OPENJPEG_LIBRARY_NAME})
+else()
+  # Builds both static and dynamic libs
+  add_library(${OPENJPEG_LIBRARY_NAME} SHARED ${OPENJPEG_SRCS})
+  add_library(openjp2_static STATIC ${OPENJPEG_SRCS})
+  set_target_properties(openjp2_static PROPERTIES OUTPUT_NAME ${OPENJPEG_LIBRARY_NAME})
+  set(INSTALL_LIBS ${OPENJPEG_LIBRARY_NAME} openjp2_static)
 endif()
-add_library(${OPENJPEG_LIBRARY_NAME} ${OPENJPEG_SRCS})
+
 if(UNIX)
   target_link_libraries(${OPENJPEG_LIBRARY_NAME} m)
 endif()
 set_target_properties(${OPENJPEG_LIBRARY_NAME} PROPERTIES ${OPENJPEG_LIBRARY_PROPERTIES})
 if(${CMAKE_VERSION} VERSION_GREATER "2.8.11")
-  target_compile_options(${OPENJPEG_LIBRARY_NAME} PRIVATE ${OPENJPEG_LIBRARY_COMPILE_OPTIONS})
+  target_compile_options(${OPENJPEG_LIBRARY_NAME} PRIVATE ${OPENJP2_COMPILE_OPTIONS})
 endif()
 
 # Install library
-install(TARGETS ${OPENJPEG_LIBRARY_NAME}
+install(TARGETS ${INSTALL_LIBS}
   EXPORT OpenJPEGTargets
   RUNTIME DESTINATION ${OPENJPEG_INSTALL_BIN_DIR} COMPONENT Applications
   LIBRARY DESTINATION ${OPENJPEG_INSTALL_LIB_DIR} COMPONENT Libraries
@@ -121,7 +135,7 @@ endif()
 
 # Experimental option; let's how cppcheck performs
 # Implementation details:
-# I could not figure out how to easily upload a file to CDash. Instead simply
+# I could not figure out how to easily upload a file to CDash. Instead simply
 # pretend cppcheck is part of the Build step. Technically cppcheck can even
 # output gcc formatted error/warning report
 # Another implementation detail: I could not redirect error to the error
@@ -144,3 +158,46 @@ if(OPJ_USE_DSYMUTIL)
     DEPENDS ${OPENJPEG_LIBRARY_NAME})
   endif()
 endif()
+
+#################################################################################
+# threading configuration
+#################################################################################
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+
+option(OPJ_USE_THREAD "Build with thread/mutex support " ON)
+if(NOT OPJ_USE_THREAD)
+   add_definitions( -DMUTEX_stub)
+endif(NOT OPJ_USE_THREAD)
+
+find_package(Threads QUIET)
+
+if(OPJ_USE_THREAD AND WIN32 AND NOT Threads_FOUND )
+    add_definitions( -DMUTEX_win32)
+    set(Threads_FOUND YES)
+endif()
+
+if(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_WIN32_THREADS_INIT )
+   add_definitions( -DMUTEX_win32)
+endif(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_WIN32_THREADS_INIT )
+
+if(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT )
+   add_definitions( -DMUTEX_pthread)
+endif(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT )
+
+if(OPJ_USE_THREAD AND NOT Threads_FOUND)
+  message(FATAL_ERROR "No thread library found and thread/mutex support is required by OPJ_USE_THREAD option")
+endif(OPJ_USE_THREAD AND NOT Threads_FOUND)
+
+if(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT)
+   TARGET_LINK_LIBRARIES(${OPENJPEG_LIBRARY_NAME} ${CMAKE_THREAD_LIBS_INIT})
+endif(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT)
+
+if(BUILD_BENCH_DWT)
+    add_executable(bench_dwt bench_dwt.c dwt.c opj_malloc.c thread.c)
+    if(UNIX)
+        target_link_libraries(bench_dwt m)
+    endif()
+    if(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT)
+        target_link_libraries(bench_dwt ${CMAKE_THREAD_LIBS_INIT})
+    endif(OPJ_USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT)
+endif(BUILD_BENCH_DWT)

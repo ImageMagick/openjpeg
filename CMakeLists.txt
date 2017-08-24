@@ -24,7 +24,7 @@ endif()
 #string(TOLOWER ${OPENJPEG_NAMESPACE} OPENJPEG_LIBRARY_NAME)
 set(OPENJPEG_LIBRARY_NAME openjp2)
 
-project(${OPENJPEG_NAMESPACE} C)
+project(${OPENJPEG_NAMESPACE})
 
 # Do full dependency headers.
 include_regular_expression("^.*$")
@@ -32,8 +32,8 @@ include_regular_expression("^.*$")
 #-----------------------------------------------------------------------------
 # OPENJPEG version number, useful for packaging and doxygen doc:
 set(OPENJPEG_VERSION_MAJOR 2)
-set(OPENJPEG_VERSION_MINOR 1)
-set(OPENJPEG_VERSION_BUILD 2)
+set(OPENJPEG_VERSION_MINOR 2)
+set(OPENJPEG_VERSION_BUILD 0)
 set(OPENJPEG_VERSION
   "${OPENJPEG_VERSION_MAJOR}.${OPENJPEG_VERSION_MINOR}.${OPENJPEG_VERSION_BUILD}")
 set(PACKAGE_VERSION
@@ -54,6 +54,7 @@ set(PACKAGE_VERSION
 #   2.1   |  7
 #   2.1.1 |  7
 #   2.1.2 |  7
+#   2.2.0 |  7
 # above is the recommendation by the OPJ team. If you really need to override this default,
 # you can specify your own OPENJPEG_SOVERSION at cmake configuration time:
 # cmake -DOPENJPEG_SOVERSION:STRING=42 /path/to/openjpeg
@@ -193,6 +194,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
   # set(CMAKE_C_FLAGS "-Wall -std=c99 ${CMAKE_C_FLAGS}") # FIXME: this setting prevented us from setting a coverage build.
   # Do not use ffast-math for all build, it would produce incorrect results, only set for release:
   set(OPENJPEG_LIBRARY_COMPILE_OPTIONS ${OPENJPEG_LIBRARY_COMPILE_OPTIONS} "$<$<CONFIG:Release>:-ffast-math>")
+  set(OPENJP2_COMPILE_OPTIONS ${OPENJP2_COMPILE_OPTIONS} "$<$<CONFIG:Release>:-ffast-math>" -Wall -Wextra -Wconversion -Wunused-parameter -Wdeclaration-after-statement -Werror=declaration-after-statement)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -251,6 +253,7 @@ if(BUILD_JPIP_SERVER)
 endif()
 add_subdirectory(src/lib)
 option(BUILD_LUTS_GENERATOR "Build utility to generate t1_luts.h" OFF)
+option(BUILD_BENCH_DWT "Build bench_dwt utility (development benchmark)" OFF)
 
 #-----------------------------------------------------------------------------
 # Build Applications
@@ -385,3 +388,6 @@ if(BUILD_PKGCONFIG_FILES)
 endif()
 
 #-----------------------------------------------------------------------------
+
+# build our version of astyle
+SET (WITH_ASTYLE FALSE CACHE BOOL "If you plan to contribute you should reindent with scripts/prepare-commit.sh (using 'our' astyle)")

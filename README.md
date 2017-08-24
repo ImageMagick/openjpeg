@@ -49,6 +49,7 @@ The library is developed and maintained by the Image and Signal Processing Group
 * doc: doxygen documentation setup file and man pages
 * tests: configuration files and utilities for the openjpeg test suite. All test images are located in [openjpeg-data](https://github.com/uclouvain/openjpeg-data) repository.
 * cmake: cmake related files
+* scripts: scripts for developers
 
 See [LICENSE][link-license] for license and copyright information.
 
@@ -71,12 +72,12 @@ On windows, MSVC directly supports export/hiding function and as such the only
 API available is the one supported by OpenJPEG.
 
 [comment-license]: https://img.shields.io/github/license/uclouvain/openjpeg.svg "https://img.shields.io/badge/license-BSD--2--Clause-blue.svg"
-[badge-license]: https://img.shields.io/badge/license-BSD--2--Clause-blue.svg "BSD 2-clause "Simplified" License"
-[link-license]: https://github.com/uclouvain/openjpeg/blob/master/LICENSE "BSD 2-clause "Simplified" License"
-[badge-build]: https://travis-ci.org/uclouvain/openjpeg.svg?branch=openjpeg-2.1 "Build Status"
+[badge-license]: https://img.shields.io/badge/license-BSD--2--Clause-blue.svg "BSD 2-clause \"Simplified\" License"
+[link-license]: https://github.com/uclouvain/openjpeg/blob/master/LICENSE "BSD 2-clause \"Simplified\" License"
+[badge-build]: https://travis-ci.org/uclouvain/openjpeg.svg?branch=master "Build Status"
 [link-build]: https://travis-ci.org/uclouvain/openjpeg "Build Status"
-[badge-msvc-build]: https://ci.appveyor.com/api/projects/status/github/uclouvain/openjpeg?branch=openjpeg-2.1&svg=true "Windows Build Status"
-[link-msvc-build]: https://ci.appveyor.com/project/detonin/openjpeg/branch/openjpeg-2.1 "Windows Build Status"
+[badge-msvc-build]: https://ci.appveyor.com/api/projects/status/github/uclouvain/openjpeg?branch=master&svg=true "Windows Build Status"
+[link-msvc-build]: https://ci.appveyor.com/project/detonin/openjpeg/branch/master "Windows Build Status"
 [badge-coverity]: https://scan.coverity.com/projects/6383/badge.svg "Coverity Scan Build Status"
 [link-coverity]: https://scan.coverity.com/projects/uclouvain-openjpeg "Coverity Scan Build Status"
 [link-api-timeline]: http://www.openjpeg.org/abi-check/timeline/openjpeg "OpenJPEG API/ABI timeline"
