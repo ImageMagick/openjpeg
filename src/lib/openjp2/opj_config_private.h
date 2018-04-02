@@ -1,5 +1,7 @@
 /* create opj_config_private.h for CMake */
+#if defined(_MSC_VER) && _MSC_VER > 1700
 #define OPJ_HAVE_INTTYPES_H 	1
+#endif
 
 #define OPJ_PACKAGE_VERSION "2.3.0"
 
