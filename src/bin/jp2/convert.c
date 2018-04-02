@@ -580,13 +580,10 @@ struct tga_header {
 };
 #endif /* INFORMATION_ONLY */
 
-static unsigned short get_ushort(const unsigned char *data)
+/* Returns a ushort from a little-endian serialized value */
+static unsigned short get_tga_ushort(const unsigned char *data)
 {
-    unsigned short val = *(const unsigned short *)data;
-#ifdef OPJ_BIG_ENDIAN
-    val = ((val & 0xffU) << 8) | (val >> 8);
-#endif
-    return val;
+    return (unsigned short)(data[0] | (data[1] << 8));
 }
 
 #define TGA_HEADER_SIZE 18
@@ -613,17 +610,17 @@ static int tga_readheader(FILE *fp, unsigned int *bits_per_pixel,
     id_len = tga[0];
     /*cmap_type = tga[1];*/
     image_type = tga[2];
-    /*cmap_index = get_ushort(&tga[3]);*/
-    cmap_len = get_ushort(&tga[5]);
+    /*cmap_index = get_tga_ushort(&tga[3]);*/
+    cmap_len = get_tga_ushort(&tga[5]);
     cmap_entry_size = tga[7];
 
 
 #if 0
-    x_origin = get_ushort(&tga[8]);
-    y_origin = get_ushort(&tga[10]);
+    x_origin = get_tga_ushort(&tga[8]);
+    y_origin = get_tga_ushort(&tga[10]);
 #endif
-    image_w = get_ushort(&tga[12]);
-    image_h = get_ushort(&tga[14]);
+    image_w = get_tga_ushort(&tga[12]);
+    image_h = get_tga_ushort(&tga[14]);
     pixel_depth = tga[16];
     image_desc  = tga[17];
 
@@ -817,6 +814,25 @@ opj_image_t* tgatoimage(const char *filename, opj_cparameters_t *parameters)
         color_space = OPJ_CLRSPC_SRGB;
     }
 
+    /* If the declared file size is > 10 MB, check that the file is big */
+    /* enough to avoid excessive memory allocations */
+    if (image_height != 0 &&
+            image_width > 10000000U / image_height / (OPJ_UINT32)numcomps) {
+        char ch;
+        OPJ_UINT64 expected_file_size =
+            (OPJ_UINT64)image_width * image_height * (OPJ_UINT32)numcomps;
+        long curpos = ftell(f);
+        if (expected_file_size > (OPJ_UINT64)INT_MAX) {
+            expected_file_size = (OPJ_UINT64)INT_MAX;
+        }
+        fseek(f, (long)expected_file_size - 1, SEEK_SET);
+        if (fread(&ch, 1, 1, f) != 1) {
+            fclose(f);
+            return NULL;
+        }
+        fseek(f, curpos, SEEK_SET);
+    }
+
     subsampling_dx = parameters->subsampling_dx;
     subsampling_dy = parameters->subsampling_dy;
 
@@ -941,7 +957,7 @@ int imagetotga(opj_image_t * image, const char *outfile)
     int width, height, bpp, x, y;
     OPJ_BOOL write_alpha;
     unsigned int i;
-    int adjustR, adjustG, adjustB, fails;
+    int adjustR, adjustG = 0, adjustB = 0, fails;
     unsigned int alpha_channel;
     float r, g, b, a;
     unsigned char value;
@@ -986,8 +1002,10 @@ int imagetotga(opj_image_t * image, const char *outfile)
     scale = 255.0f / (float)((1 << image->comps[0].prec) - 1);
 
     adjustR = (image->comps[0].sgnd ? 1 << (image->comps[0].prec - 1) : 0);
-    adjustG = (image->comps[1].sgnd ? 1 << (image->comps[1].prec - 1) : 0);
-    adjustB = (image->comps[2].sgnd ? 1 << (image->comps[2].prec - 1) : 0);
+    if (image->numcomps >= 3) {
+        adjustG = (image->comps[1].sgnd ? 1 << (image->comps[1].prec - 1) : 0);
+        adjustB = (image->comps[2].sgnd ? 1 << (image->comps[2].prec - 1) : 0);
+    }
 
     for (y = 0; y < height; y++) {
         unsigned int index = (unsigned int)(y * width);
@@ -1145,6 +1163,7 @@ opj_image_t* pgxtoimage(const char *filename, opj_cparameters_t *parameters)
     opj_image_cmptparm_t cmptparm;  /* maximum of 1 component  */
     opj_image_t * image = NULL;
     int adjustS, ushift, dshift, force8;
+    OPJ_UINT64 expected_file_size;
 
     char endian1, endian2, sign;
     char signtmp[32];
@@ -1167,7 +1186,7 @@ opj_image_t* pgxtoimage(const char *filename, opj_cparameters_t *parameters)
     }
 
     fseek(f, 0, SEEK_SET);
-    if (fscanf(f, "PG%[ \t]%c%c%[ \t+-]%d%[ \t]%d%[ \t]%d", temp, &endian1,
+    if (fscanf(f, "PG%31[ \t]%c%c%31[ \t+-]%d%31[ \t]%d%31[ \t]%d", temp, &endian1,
                &endian2, signtmp, &prec, temp, &w, temp, &h) != 9) {
         fclose(f);
         fprintf(stderr,
@@ -1193,6 +1212,29 @@ opj_image_t* pgxtoimage(const char *filename, opj_cparameters_t *parameters)
         fclose(f);
         fprintf(stderr, "Bad pgx header, please check input file\n");
         return NULL;
+    }
+
+    if (w < 1 || h < 1 || prec < 1 || prec > 31) {
+        fclose(f);
+        fprintf(stderr, "Bad pgx header, please check input file\n");
+        return NULL;
+    }
+
+    expected_file_size =
+        (OPJ_UINT64)w * (OPJ_UINT64)h * (prec > 16 ? 4 : prec > 8 ? 2 : 1);
+    if (expected_file_size > 10000000U) {
+        char ch;
+        long curpos = ftell(f);
+        if (expected_file_size > (OPJ_UINT64)INT_MAX) {
+            expected_file_size = (OPJ_UINT64)INT_MAX;
+        }
+        fseek(f, (long)expected_file_size - 1, SEEK_SET);
+        if (fread(&ch, 1, 1, f) != 1) {
+            fprintf(stderr, "File too short\n");
+            fclose(f);
+            return NULL;
+        }
+        fseek(f, curpos, SEEK_SET);
     }
 
     /* initialize image component */
@@ -1290,7 +1332,7 @@ opj_image_t* pgxtoimage(const char *filename, opj_cparameters_t *parameters)
     return image;
 }
 
-#define CLAMP(x,a,b) x < a ? a : (x > b ? b : x)
+#define CLAMP(x,a,b) ((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
 
 static INLINE int clamp(const int value, const int prec, const int sgnd)
 {
@@ -1370,25 +1412,59 @@ int imagetopgx(opj_image_t * image, const char *outfile)
             nbytes = 4;
         }
 
-        for (i = 0; i < w * h; i++) {
-            /* FIXME: clamp func is being called within a loop */
-            const int val = clamp(image->comps[compno].data[i],
-                                  (int)comp->prec, (int)comp->sgnd);
-
-            for (j = nbytes - 1; j >= 0; j--) {
-                int v = (int)(val >> (j * 8));
-                unsigned char byte = (unsigned char)v;
-                res = fwrite(&byte, 1, 1, fdest);
-
-                if (res < 1) {
-                    fprintf(stderr, "failed to write 1 byte for %s\n", name);
+        if (nbytes == 1) {
+            unsigned char* line_buffer = malloc((size_t)w);
+            if (line_buffer == NULL) {
+                fprintf(stderr, "Out of memory");
+                goto fin;
+            }
+            for (j = 0; j < h; j++) {
+                if (comp->prec == 8 && comp->sgnd == 0) {
+                    for (i = 0; i < w; i++) {
+                        line_buffer[i] = (unsigned char)CLAMP(image->comps[compno].data[j * w + i], 0,
+                                                              255);
+                    }
+                } else {
+                    for (i = 0; i < w; i++) {
+                        line_buffer[i] = (unsigned char)
+                                         clamp(image->comps[compno].data[j * w + i],
+                                               (int)comp->prec, (int)comp->sgnd);
+                    }
+                }
+                res = fwrite(line_buffer, 1, (size_t)w, fdest);
+                if (res != (size_t)w) {
+                    fprintf(stderr, "failed to write %d bytes for %s\n", w, name);
                     if (total > 256) {
                         free(name);
                     }
+                    free(line_buffer);
                     goto fin;
                 }
             }
+            free(line_buffer);
+        } else {
+
+            for (i = 0; i < w * h; i++) {
+                /* FIXME: clamp func is being called within a loop */
+                const int val = clamp(image->comps[compno].data[i],
+                                      (int)comp->prec, (int)comp->sgnd);
+
+                for (j = nbytes - 1; j >= 0; j--) {
+                    int v = (int)(val >> (j * 8));
+                    unsigned char byte = (unsigned char)v;
+                    res = fwrite(&byte, 1, 1, fdest);
+
+                    if (res < 1) {
+                        fprintf(stderr, "failed to write 1 byte for %s\n", name);
+                        if (total > 256) {
+                            free(name);
+                        }
+                        goto fin;
+                    }
+                }
+            }
         }
+
         if (total > 256) {
             free(name);
         }

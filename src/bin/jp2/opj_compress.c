@@ -169,7 +169,7 @@ static void encode_help_display(void)
     fprintf(stdout, "    Different compression ratios for successive layers.\n");
     fprintf(stdout,
             "    The rate specified for each quality level is the desired\n");
-    fprintf(stdout, "    compression factor.\n");
+    fprintf(stdout, "    compression factor (use 1 for lossless)\n");
     fprintf(stdout, "    Decreasing ratios required.\n");
     fprintf(stdout, "      Example: -r 20,10,1 means \n");
     fprintf(stdout, "            quality layer 1: compress 20x, \n");
@@ -178,7 +178,8 @@ static void encode_help_display(void)
     fprintf(stdout, "    Options -r and -q cannot be used together.\n");
     fprintf(stdout, "-q <psnr value>,<psnr value>,<psnr value>,...\n");
     fprintf(stdout, "    Different psnr for successive layers (-q 30,40,50).\n");
-    fprintf(stdout, "    Increasing PSNR values required.\n");
+    fprintf(stdout, "    Increasing PSNR values required, except 0 which can\n");
+    fprintf(stdout, "    be used for the last layer to indicate it is lossless.\n");
     fprintf(stdout, "    Options -r and -q cannot be used together.\n");
     fprintf(stdout, "-n <number of resolutions>\n");
     fprintf(stdout, "    Number of resolutions.\n");
@@ -907,8 +908,9 @@ static int parse_cmdline_encoder(int argc, char **argv,
         case 'b': {         /* code-block dimension */
             int cblockw_init = 0, cblockh_init = 0;
             sscanf(opj_optarg, "%d,%d", &cblockw_init, &cblockh_init);
-            if (cblockw_init * cblockh_init > 4096 || cblockw_init > 1024
-                    || cblockw_init < 4 || cblockh_init > 1024 || cblockh_init < 4) {
+            if (cblockw_init > 1024 || cblockw_init < 4 ||
+                    cblockh_init > 1024 || cblockh_init < 4 ||
+                    cblockw_init * cblockh_init > 4096) {
                 fprintf(stderr,
                         "!! Size of code_block error (option -b) !!\n\nRestriction :\n"
                         "    * width*height<=4096\n    * 4<=width,height<= 1024\n\n");
@@ -1618,9 +1620,12 @@ static int parse_cmdline_encoder(int argc, char **argv,
         return 1;
     }               /* mod fixed_quality */
 
+
     /* if no rate entered, lossless by default */
+    /* Note: post v2.2.0, this is no longer necessary, but for released */
+    /* versions at the time of writing, this is needed to avoid crashes */
     if (parameters->tcp_numlayers == 0) {
-        parameters->tcp_rates[0] = 0;   /* MOD antonin : losslessbug */
+        parameters->tcp_rates[0] = 0;
         parameters->tcp_numlayers++;
         parameters->cp_disto_alloc = 1;
     }
