@@ -1,17 +1,9 @@
 #include "winver.h"
-
-#define THIS_PROJECT_VERSION_NUM		2,3,1
-#define THIS_PROJECT_VERSION_STRING		"2.3.1 (2019-02-26)"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-/////////////////////////////////////////////////////////////////////////////
+#include "ImageMagick.version.h"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION THIS_PROJECT_VERSION_NUM
- PRODUCTVERSION THIS_PROJECT_VERSION_NUM
+ FILEVERSION DELEGATE_VERSION_NUM
+ PRODUCTVERSION DELEGATE_VERSION_NUM
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -30,8 +22,8 @@ BEGIN
             VALUE "FileDescription", "ImageMagick library and utility programs\0"
             VALUE "OriginalFilename", "OpenJPEG\0"
             VALUE "InternalName", "ImageMagick\0"
-            VALUE "FileVersion", THIS_PROJECT_VERSION_STRING "\0"
-            VALUE "ProductVersion", THIS_PROJECT_VERSION_STRING "\0"
+            VALUE "FileVersion", DELEGATE_VERSION_STRING "\0"
+            VALUE "ProductVersion", DELEGATE_VERSION_STRING "\0"
             VALUE "CompanyName", "Communications and Remote Sensing Lab\0"
             VALUE "LegalCopyright", "Copyright © 2002-2013 Communications and Remote Sensing Lab\0"
             VALUE "Comments", "http://www.openjpeg.org/\0"
