@@ -28,9 +28,6 @@ add_library(openjpegjni MODULE
 set_property(TARGET openjpegjni PROPERTY NO_SONAME 1)
 
 # FIXME (need to use old API):
-if(BUILD_MJ2)
-  target_link_libraries(openjpegjni openmj2)
-endif()
 target_link_libraries(openjpegjni
   ${PNG_LIBNAME} ${TIFF_LIBNAME} ${LCMS_LIBNAME} ${Z_LIBNAME}
 )
@@ -44,7 +41,7 @@ install(TARGETS openjpegjni
 )
 
 # build jar:
-find_package(Java 1.5 REQUIRED) # javac, jar
+find_package(Java 1.6 REQUIRED) # javac, jar
 
 # build dep list:
 file(GLOB java_srcs "java-sources/org/openJpeg/*.java")

@@ -13,7 +13,7 @@ else()
 	set( CTEST_DASHBOARD_ROOT  "$ENV{PWD}/build" )
 endif()
 
-if("$ENV{TRAVIS_OS_NAME}" STREQUAL "windows")
+if("$ENV{OPJ_SHORT_OS_NAME}" STREQUAL "windows")
 	set( CTEST_CMAKE_GENERATOR "NMake Makefiles")
 	set( CTEST_BUILD_COMMAND   "nmake" )
 	set( JPYLYZER_EXT          "exe"  )
@@ -84,7 +84,7 @@ if(NOT "$ENV{OPJ_CI_SKIP_TESTS}" STREQUAL "1")
 	# Note: Binaries can only be used for non-commercial purposes.
 	if ("$ENV{OPJ_NONCOMMERCIAL}" STREQUAL "1" )
 		set(KDUPATH $ENV{PWD}/kdu)
-		if("$ENV{TRAVIS_OS_NAME}" STREQUAL "windows")
+		if("$ENV{OPJ_SHORT_OS_NAME}" STREQUAL "windows")
 			set(ENV{PATH} "$ENV{PATH};${KDUPATH}")
 		else()
 			set(ENV{LD_LIBRARY_PATH} ${KDUPATH})
@@ -120,6 +120,9 @@ BUILD_TESTING:BOOL=${BUILD_TESTING}
 
 # Build Thirdparty, useful but not required for test suite
 BUILD_THIRDPARTY:BOOL=TRUE
+
+# Build unit tests that test subcomponents of libopenjp2 (e.g. DWT)
+BUILD_UNIT_TESTS:BOOL=TRUE
 
 # JPEG2000 test files are available with git clone https://github.com/uclouvain/openjpeg-data.git
 OPJ_DATA_ROOT:PATH=$ENV{PWD}/data
