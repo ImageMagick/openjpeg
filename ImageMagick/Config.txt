@@ -1,0 +1,28 @@
+[DLL]
+
+[LICENSE]
+LICENSE
+
+[DEFINES]
+DLL_EXPORT
+
+[DEFINES_LIB]
+OPJ_STATIC
+
+[DIRECTORIES]
+src\lib\openjp2
+
+[EXCLUDES]
+bench_dwt.c
+cidx_manager.c
+phix_manager.c
+ppix_manager.c
+t1_generate_luts.c
+thix_manager.c
+tpix_manager.c
+
+[CONFIG_DEFINE]
+/*
+  Define to use the OpenJPEG library
+*/
+#define MAGICKCORE_LIBOPENJP2_DELEGATE
