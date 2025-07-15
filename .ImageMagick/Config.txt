@@ -1,4 +1,4 @@
-[DLL]
+[DYNAMIC_LIBRARY]
 
 [LICENSE]
 LICENSE
@@ -6,22 +6,30 @@ LICENSE
 [DEFINES]
 DLL_EXPORT
 
-[DEFINES_LIB]
-OPJ_STATIC
-
-[DIRECTORIES]
-src\lib\openjp2
+[INCLUDE_ARTIFACTS]
+src\lib\openjp2\openjpeg.h -> .
+src\lib\openjp2\opj_config.h -> .
 
 [EXCLUDES]
-bench_dwt.c
-cidx_manager.c
-phix_manager.c
-ppix_manager.c
-t1_generate_luts.c
-thix_manager.c
-tpix_manager.c
+cmake\
+src\bin\
+src\lib\openjpip\
+src\lib\openjp2\bench_dwt.c
+src\lib\openjp2\cidx_manager.c
+src\lib\openjp2\phix_manager.c
+src\lib\openjp2\ppix_manager.c
+src\lib\openjp2\t1_generate_luts.c
+src\lib\openjp2\thix_manager.c
+src\lib\openjp2\tpix_manager.c
+tests\
+thirdparty\
+tools\
+wrapping\
 
-[CONFIG_DEFINE]
+[STATIC_DEFINES]
+OPJ_STATIC
+
+[MAGICK_BASECONFIG_DEFINE]
 /*
   Define to use the OpenJPEG library
 */
