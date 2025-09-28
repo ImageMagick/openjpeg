@@ -1,5 +1,23 @@
 [DYNAMIC_LIBRARY]
 
+[VERSION]
+2.5.3
+
+[RELEASE_DATE]
+2024-12-09
+
+[PRODUCT_NAME]
+openjpeg
+
+[COMPANY_NAME]
+Communications and Remote Sensing Lab
+
+[URL]
+https://www.openjpeg.org
+
+[COPYRIGHT]
+Copyright © 2002 Communications and Remote Sensing Lab
+
 [LICENSE_FILE]
 LICENSE
 
