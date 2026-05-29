@@ -27,6 +27,9 @@ BSD-2-Clause
 [DEFINES]
 DLL_EXPORT
 
+[STATIC_DEFINES]
+OPJ_STATIC
+
 [INCLUDE_ARTIFACTS]
 src\lib\openjp2\openjpeg.h -> .
 src\lib\openjp2\opj_config.h -> .
@@ -46,9 +49,6 @@ tests\
 thirdparty\
 tools\
 wrapping\
-
-[STATIC_DEFINES]
-OPJ_STATIC
 
 [MAGICK_BASECONFIG_DEFINE]
 /*
